@@ -1,8 +1,10 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+var cors = require('cors');
 const dbConfig = require('./config/database.config.js');
 const mongoose = require('mongoose');
 var User = require('./models/userModel.js');
+const Assert = require('./controllers/assetExchangeController.js')
 //var bodyParser = require('body-parser');
 var jsonwebtoken = require("jsonwebtoken");
 mongoose.Promise = global.Promise;
@@ -14,7 +16,7 @@ app.use(bodyParser.urlencoded({ extended: true }))
 
 // parse requests of content-type - application/json
 app.use(bodyParser.json())
-
+app.use(cors());
 mongoose.connect(dbConfig.url, {
     useNewUrlParser: true
 }).then(() => {
@@ -45,16 +47,37 @@ app.get('/', (req, res) => {
 require('./routes/note.routes.js')(app);
 // var routes = require('./routes/userRoutes');
 // routes(app);
-app.get('/getassetbyid/:id',(req,res)=>{
-  const ids  = req.params.id;
-console.log("id",ids)
-  res.send("scucsess")
+
+
+//getassettype
+
+app.post('/totalassetamount',async (req,res)=>{
+
+                //const a = req.body.asset;
+                var exchange_name= req.body.exchange_name;
+                var date= req.body.date;
+                
+                var data = await Assert.getassettype(exchange_name,date);
+                console.log(data.assetType)
+                 let a = data.assetType;
+                var final = [];
+                for(let i=1; i<a.length;i++){
+                  console.log(a[i])
+                  //console.log(exchange_name)
+                  var asset = a[i];
+                var result =  await Assert.total(exchange_name,date,asset)
+                final.push(result)
+
+                //console.log(result)
+                }
+
+                res.send(final)
+
 })
 
-app.get("/get",(req,res)=>{
-  const d = req.query.id;
-  res.send(d)
-})
+
+
+
 
 
 // listen for requests

@@ -28,6 +28,7 @@ var UserSchema = new Schema({
     trim: true,
     required: true
   },
+  Exchange: [{ type: String }],
   created: {
     type: Date,
     default: Date.now

@@ -4,7 +4,7 @@ const crypto = require('crypto') ;
 const {Exchange} = require("../models/exchange.model")
 
 const ExchangeSchema = require('../models/exchange.model')
-
+const Assettype = require('../models/asset-type')
 // exports.create = async (req, res) => {
 //     // upload csv
 
@@ -23,78 +23,84 @@ const ExchangeSchema = require('../models/exchange.model')
 
 exports.exchange = async (req, res) => {
     // upload csv
+   
+
+    
     console.log("req",req.body)
     var filepath = "uploads/" + req.file.filename;
     // console.log("@@@@@@",req.file.filename)
     
      let jsonArray= await csv().fromFile(filepath);
      console.log(jsonArray)
+     //let key = await  Object.key(jsonArray);
+     //console.log("keys",key)
+     //console.log("eeeeee",Object.keys(jsonArray[0]))
+     var key = Object.keys(jsonArray[0]);
+     const asset = new Assettype({
+        // date: new Date().valueOf(),
+         date: req.body.date,
+        exchange_name: req.body.exchange_name , 
+        //dynamic number: exchangename+fourdigitid
+        assetType: key
+    });
+// Save por in the database
+    await asset.save();
+
         let sum = 0;
 
-     for (let i = 0; i<jsonArray.length; i++){
+            for (let i = 0; i<jsonArray.length; i++){
 
-        const array = await  Object.values(jsonArray[i])
+                const array = await  Object.values(jsonArray[i])
 
-       // console.log(array)
-       const b = array.shift()
-        var cb; 
-       var numberArray = [];
-       length = array.length;
-       for (var j = 0; j < length; j++)
-        numberArray.push(parseInt(array[j]));
-         cb = numberArray;
-         console.log("wwwww: ",cb)
-         var r = 0;
-         for (let k = 0; k<cb.length; k++){
-            //var r = cb[k]
+            // console.log(array)
+            const b = array.shift()
+                var cb; 
+            var numberArray = [];
+            length = array.length;
+            for (var j = 0; j < length; j++)
+                numberArray.push(parseInt(array[j]));
+                cb = numberArray;
+               // console.log("wwwww: ",cb)
+                var r = 0;
+                for (let k = 0; k<cb.length; k++){
+                    //var r = cb[k]
+                    
+                    r += cb[k]
+
+                
+                }
+                //console.log("r",r)
+                var id = await jsonArray[i].UserId;
+                //console.log("id",id)
+                
+
+                const k = id+r;
             
-            r += cb[k]
+                const g = crypto.createHash('sha256').update(k).digest('hex');
+                //console.log("hash",g)
+                jsonArray[i].sum = r;
+                jsonArray[i].hash =g;
 
-          
-         }
-         console.log("r",r)
-         var id = await jsonArray[i].UserId;
-         console.log("id",id)
-        
+            
+            }
 
-        const k = id+r;
-    
-        const g = crypto.createHash('sha256').update(k).digest('hex');
-        console.log("hash",g)
-        jsonArray[i].sum = r;
-        jsonArray[i].hash =g;
-
-    
-    }
-
-    //console.log(jsonArray)
-
-    //console.log("sum",sum)
-
-     //res.send(jsonArray)
-    //  const d = await Asset.insertMany(jsonArray)
-
-
-const por = new ExchangeSchema({
-    // date: new Date().valueOf(),
- date: req.body.date,
-    exchange_name: req.body.exchange_name , 
-    exchange_id: req.body.exchange_id,
-    //dynamic number: exchangename+fourdigitid
-    exchange_list: jsonArray
-});
-
-// new Date().valueOf()
-
+            const por = new ExchangeSchema({
+                // date: new Date().valueOf(),
+            date: req.body.date,
+                exchange_name: req.body.exchange_name , 
+                exchange_id: req.body.exchange_id,
+                //dynamic number: exchangename+fourdigitid
+                exchange_list: jsonArray
+            });
 // Save por in the database
-por.save()
-.then(data => {
-    res.send(data);
-}).catch(err => {
-    res.status(500).send({
-        message: err.message || "Some error occurred while creating the por."
-    });
-});
+            por.save()
+            .then(data => {
+                res.send(data);
+            }).catch(err => {
+                res.status(500).send({
+                    message: err.message || "Some error occurred while creating the por."
+                });
+            });
 
 
 };
@@ -111,7 +117,7 @@ exports.exchange_findOne = async (req, res) => {
        res.send(data)
          console.log(data);
      }else{
-         res.send("merkletree not found for ")
+         res.send("data not found ")
      }
    } catch (error) {
      console.log(error);
@@ -121,80 +127,15 @@ exports.exchange_findOne = async (req, res) => {
 exports.getexchange_list = async(req,res)=>{
 
 
-
+    // const limitValue = req.query.limit || 2;
+    // const skipValue = req.query.skip || 0;
     var data = await Asset.findOne({
         Exchange_name: req.body.Exchange_name,
     })
+    // .limit(limitValue).skip(skipValue);
     res.status(200).send(data)
 }
 
-// exports.getbalance = async(req,res)=>{
-//     try{
-
-    
-//     //var query = { exchange_list: "BTC" }
-// var a = req.query.asset;
-// var b = req.query.date;
-// var sum = 0;
-// console.log("Asset",a)
-//    await  ExchangeSchema.aggregate([
-//     {
-//         "$unwind": "$exchange_list"
-//     },{
-//         $match:{
-            
-//             $and: [
-//                 {"exchange_list.Asset": a, "date": b, }
-//                ]
-//         }
-       
-//     },{
-//         $group:{
-//             _id: "$_id",
-//             push:{
-//                 $first: "$push"
-//             },
-//             exchange_list:{
-//                 $push: "$exchange_list"
-//             }
-//         }
-//     }
-//    ]
-//     )
-// //     Exchange.aggregate([{
-// //         $unwind: "$exchange_list"
-// //     },{
-// //         $match:{
-// //             Asset: "BTC"
-// //         }
-// //     }
-// // ])
-//     .then(data => {
-// // var d = JSON.stringify(data);
-// console.log("data",data[0].exchange_list)
-// var list = data[0].exchange_list
-
-// for(let i=0;i<list.length;i++){
-//     var first =  parseInt(list[i].Quantity);
-//     console.log("first",first)
-//     sum = sum + first
-//     //console.log("result",result)
-// }
-// var result = {
-//     Asset: req.query.asset,
-//     Sum: sum
-// }
-//         res.json(result);
-//        // console.log("data",JSON.stringify(data))
-//     }).catch(err => {
-//         res.status(500).send({
-//             message: err.message || "Some error occurred while retrieving data."
-//         });
-//     })
-// }catch(err){
-//     res.send("Error",err)
-// }
-// }
 
 exports.totalbalance = async (req, res) => {
     // Por.findOne(req.body.exchange_name)
@@ -219,6 +160,48 @@ for (let i =0; i<a.length; i++){
         Total: sum
     }
     res.status(200).send(result)
+   } catch (error) {
+     console.log(error);
+   }}
+
+
+   exports.getassettype = async (exchange_name,date) => {
+    // Por.findOne(req.body.exchange_name)
+    try {
+     const data = await Assettype.findOne({
+         exchange_name: exchange_name,
+         date: date
+     });
+     //console.log("data",data)
+     return data;
+
+   } catch (error) {
+     console.log(error);
+   }}
+
+exports.total = async (exchange_name,date,asset) => {
+    // Por.findOne(req.body.exchange_name)
+    try {
+     const data = await ExchangeSchema.findOne({
+         exchange_name: exchange_name,
+         date: date
+     });
+ const a = data.exchange_list;
+ var sum = 0;
+for (let i =0; i<a.length; i++){
+
+   // console.log(a[i].Eth)
+   var assettype = asset
+  // const a = a[i]
+    let b = parseInt(a[i][assettype])
+    sum = sum + b 
+}
+ console.log("aaaa",sum)
+    var result = {
+        Asset: assettype,
+        Total: sum
+    }
+    return result;
    } catch (error) {
      console.log(error);
    }}

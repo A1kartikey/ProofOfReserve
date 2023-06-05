@@ -78,7 +78,7 @@ exports.register = function(req, res) {
 
         //res.send(user)
         //console.log("password",data.hash_password)
-        return res.send({ token: jwt.sign({ email: data.email, fullName: data.fullName, _id: data._id, role: data.role }, 'RESTFULAPIs') });
+        return res.send({ token: jwt.sign({ email: data.email, fullName: data.fullName, _id: data._id, role: data.role, exchange: data.Exchange }, 'RESTFULAPIs') });
       
   };
 
