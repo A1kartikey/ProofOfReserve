@@ -6,12 +6,14 @@ exports.create = async (req, res) => {
     //const Accountslist = "3QKLDgD5nQZUfbp1fPqb2mrvNsQxA7wxc2"
     const Accountslist = req.body.accountlist;
     const assettype = req.body.assettype;
+    const Date= req.body.date;
     const url = "https://api.coinmetrics.io/v4/blockchain-v2/"+assettype+"/accounts"
     axios.get(url, {
         params: {
           accounts: Accountslist,
           pretty: true,
-          api_key: "6oZAdNZcdtwAeLWAP4yG"
+          api_key: "6oZAdNZcdtwAeLWAP4yG",
+          end_time: Date
  }
       })
         .then(response => {

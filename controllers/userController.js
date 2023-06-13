@@ -86,7 +86,7 @@ exports.register = function(req, res) {
 
 
     
-    const filter = { email: 'vineeth@gmail.com' };
+    const filter = { email: req.body.email };
     const update = { hash_password : bcrypt.hashSync(req.body.password, 10)};
     const opts = { new: true };
     
