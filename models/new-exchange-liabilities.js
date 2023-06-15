@@ -4,7 +4,7 @@ const Exchange_liabilities = mongoose.Schema({
     Customer_ID: String,
     Cryptoasset: String,
     Balance: String,
-    Last_Updated: String,
+    ASOFDATE: String,
     exchange_name: String,
     date: String
 

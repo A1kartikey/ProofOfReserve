@@ -1,10 +1,13 @@
 const express = require('express');
+const { MerkleTree } = require('merkletreejs') ;
+const crypto = require('crypto') ;
 const bodyParser = require('body-parser');
 var cors = require('cors');
 const dbConfig = require('./config/database.config.js');
 const mongoose = require('mongoose');
 var User = require('./models/userModel.js');
 const Leafhash = require('./models/leaf_hash-model.js')
+const merkle_tree = require('./models/merkletree-model.js')
 const Assert = require('./controllers/assetExchangeController.js')
 const Solvency = require('./controllers/solvency.js')
 
@@ -256,7 +259,7 @@ app.post('/generateleafhash',async (req,res)=>{
                 result.push(dataaaa)
 
                 }
-console.log("259",result[0])
+                  console.log("259",result[0])
                 const leaf_hash = new Leafhash({
                   // date: new Date().valueOf(),
                    date: req.body.date,
@@ -324,6 +327,93 @@ app.get('/solvency',async(req,res)=>{
 })
 
 
+
+
+app.post('/generate_Merkletree',async (req,res)=>{
+       try {
+                    //const a = req.body.asset;
+                  var exchange_name= req.body.exchange_name;
+                  //console.log("s",exchange_name)
+                  var date= req.body.date;
+                  var tree = 0 ;
+                 // console.log("eeee",date)
+                  var data = await Assert.getassettype(exchange_name,date);
+                  if( data == null){ 
+                    throw "coustmer_id not found" 
+                  }
+                  //console.log(data.coustmer_id)
+                  let c = data.coustmer_id;
+                  //console.log(c)
+                  let dataaaa;
+                  let result = [];
+                 for (let i=0; i<c.length; i++){
+
+                 let id = c[i]
+                 dataaaa = await Assert.get_liabilities(exchange_name,date,id)
+                result.push(dataaaa)
+
+                }
+                 console.log("259",result[0])
+                  var concatResult = [] ; 
+                  var Tree = { } ;
+                  result.forEach(element => {
+
+                    concatResult.push( element.ID + element.Total + element.asofdate );
+                  });
+               //console.log("35999999999",concatResult)
+               var hashArray = [] ;
+               var hashOfElement ;
+               concatResult.forEach(element => { 
+               
+                 const h = crypto.createHash('sha256').update(element).digest('hex');
+               
+                 hashArray.push(h) ;
+               })
+               tree = new MerkleTree(hashArray) ;
+               var arry = [] ; 
+               var foo =1 ;
+               
+               tree.layers.forEach(element => {
+                   arry = [] ;
+                   element.forEach( x  => {        
+                       arry.push(x.toString('hex'));
+                   })
+               
+                   Tree['level'+ `${foo}` ]  = arry ;
+                   foo++ ;
+                   
+               });
+               //console.log('Tree: ',Tree) ;
+
+          // Save merkle_tree in the database
+          const mt =  new merkle_tree({
+            // date: new Date().valueOf(),
+             date: req.body.date,
+            exchange_name: req.body.exchange_name , 
+            //dynamic number: exchangename+fourdigitid
+            merkletree: Tree
+        });
+    // Save por in the database
+    console.log("Save por in the database")
+         const dd =  await mt.save();
+         console.log("39899")
+        res.send(dd);
+                  //res.send("scucess")
+                } catch (error) {
+                   res.status(404).send(error)
+                }
+  
+  })
+
+  app.get('/get_Merkletree',async(req,res)=>{
+
+    const data = await merkle_tree.findOne({
+      exchange_name: req.query.exchange_name,
+      date: req.query.date
+    });
+//console.log("data285",data)
+  res.send(data)
+})  
 
 // listen for requests
 app.listen(3000, () => {

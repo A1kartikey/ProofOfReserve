@@ -39,7 +39,7 @@ module.exports = (app) => {
     app.get("/get_assettype",assetcsv.getassettype)
     app.get("/get_dates",assetcsv.get_dates)
     
-
+app.get('/liabilities_getdates',assetcsv.liabilities_getdates)
     
     // app.get("/get_exchange_wallet_findOne",wallet.exchange_wallet_findOne)
   
@@ -50,6 +50,7 @@ module.exports = (app) => {
     //updateowner
 
     app.post("/updateowner",wallet.updateowner)
+    app.get('/reserves-getdates',wallet.getdates)
     //app.get("/getbalance",assetcsv.getbalance)
 
     app.get("/totalasset",assetcsv.totalbalance)

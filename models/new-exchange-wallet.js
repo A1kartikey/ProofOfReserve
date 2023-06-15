@@ -4,6 +4,7 @@ const Exchange_Wallets = mongoose.Schema({
     CRYPTOASSET : String,
     WALLETADDRESS: String,
     BALANCE:String,
+    ASOFDATE: String,
     VERIFIED_OWNERSHIP: String,
     VERIFIED_DATE: String,
     date: String,

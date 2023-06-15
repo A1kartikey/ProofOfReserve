@@ -49,12 +49,13 @@ exports.new_exchange = async (req, res) => {
      let jsonArray= await csv().fromFile(filepath);
         var a = [];
         let aa= [];
+
             for (let i = 0; i<jsonArray.length; i++){
 
                
                 jsonArray[i].exchange_name = exchange_name;
                 jsonArray[i].date = date;
-                jsonArray[i].Last_Updated = date;
+
                   var bb = jsonArray[i].Customer_ID;
                    aa.push(bb)
                  var b = jsonArray[i].Cryptoasset;
@@ -109,6 +110,7 @@ exports.getexchange_list = async (req,res) => {
      console.log(error);
    }}
    
+   // without pagination 
    exports.get_exchange_list = async (req,res) => {
     // Por.findOne(req.body.exchange_name)
     console.log("aaaaa",req.query.exchange_name);
@@ -126,7 +128,7 @@ const final = []
       Customer_ID: data[i].Customer_ID,
       Cryptoasset: data[i].Cryptoasset,
       Balance: data[i].Balance,
-      ASOFDATE: data[i].Last_Updated
+      ASOFDATE: data[i].ASOFDATE
     }
     final.push(a)
 
@@ -154,20 +156,22 @@ const final = []
     
         let d = data;
         var sum = 0;
+        let dat = ''  
         for (let i = 0; i<d.length; i++){
      
-     
+          
          if (d[i].Customer_ID == id){
              //console.log(d[i])
              sum = sum+ parseFloat(d[i].Balance)
-     
+             dat = d[i].ASOFDATE
          }
         
      }
      const h = id;
 const dd = sum;
-//console.log("ddfgdfgdfg")
-const k = h+dd+date;
+//console.log("ddfgdfgdfg",dat)
+const k = h+dd+dat;
+console.log("174",k)
 const g = crypto.createHash('sha256').update(k).digest('hex');
 
 
@@ -176,6 +180,7 @@ const g = crypto.createHash('sha256').update(k).digest('hex');
             ID: id,
             Total: sum,
             hash: g,
+            asofdate: dat,
             Date: date
 
         }
@@ -282,4 +287,25 @@ exports.get_dates = async (exchange_name) => {
    }}
 
 
-   
+   exports.liabilities_getdates = async (req,res) => {
+    // Por.findOne(req.body.exchange_name)
+    try {
+     const data = await Assettype.find({
+         exchange_name: req.query.exchange_name
+     });
+     var final = []
+     //console.log("data",data)
+            for (let i = 0; i<data.length; i++){
+                final.push(data[i].date)
+            }
+
+
+            var a= {
+              name: "Exchange_liabilities",
+              result: final
+            }
+                 res.status(200).json(a)
+
+   } catch (error) {
+     console.log(error);
+   }}   

@@ -111,7 +111,7 @@ exports.updateowner = async (req, res) => {
      console.log(error);
    }}
 
-
+//without pagination
    exports.get_exchange_wallet_find = async (req,res) => {
     // Por.findOne(req.body.exchange_name)
     console.log("aaaaa",req.query.exchange_name);
@@ -131,7 +131,7 @@ exports.updateowner = async (req, res) => {
           CRYPTOASSET: data[i].CRYPTOASSET,
           WALLETADDRESS: data[i].WALLETADDRESS,
           BALANCE: data[i].BALANCE,
-          ASOFDATE: data[i].date,
+          ASOFDATE: data[i].ASOFDATE,
           VERIFIED_OWNERSHIP: data[i].VERIFIED_OWNERSHIP,
           VERIFIED_DATE: data[i].VERIFIED_DATE
 
@@ -207,4 +207,28 @@ let d = data;
     return result;
    } catch (error) {
      console.log(error);
+   }}
+
+
+   exports.getdates = async (req,res) => {
+    // Por.findOne(req.body.exchange_name)
+    try {
+     const data = await Wallet_Assettype.find({
+         exchange_name: req.query.exchange_name
+     });
+     var final = []
+     //console.log("data--get_dates",data)
+            for (let i = 0; i<data.length; i++){
+                final.push(data[i].date)
+            }
+
+var a= {
+  name: "Exchange_reserves",
+  result: final
+}
+     res.status(200).json(a)
+
+   } catch (error) {
+     console.log(error);
+     res.send(error)
    }}
