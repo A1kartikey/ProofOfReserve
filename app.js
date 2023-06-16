@@ -239,10 +239,16 @@ app.post('/generateleafhash',async (req,res)=>{
     
   
                   //const a = req.body.asset;
+                  console.log(req.body,"body")
                   var exchange_name= req.body.exchange_name;
-                  //console.log("s",exchange_name)
+                  console.log("exchange_name",exchange_name)
                   var date= req.body.date;
-                 // console.log("eeee",date)
+                  console.log("date",date)
+
+                  if (exchange_name === undefined || date === undefined) {
+                    throw "exchange_name && date fileds are required"
+                  }
+
                   var data = await Assert.getassettype(exchange_name,date);
                   if( data == null){ 
                     throw "coustmer_id not found" 
@@ -383,15 +389,20 @@ app.post('/generate_Merkletree',async (req,res)=>{
                    foo++ ;
                    
                });
-               //console.log('Tree: ',Tree) ;
+               //console.log('Tree111111111111111111: ',Tree) ;
+              
+               var root = tree.getRoot().toString('hex') ;
 
+               //var roothash = await new MerkleTree(level)
+              console.log("3333333333333333333333333333",root)
           // Save merkle_tree in the database
           const mt =  new merkle_tree({
             // date: new Date().valueOf(),
              date: req.body.date,
             exchange_name: req.body.exchange_name , 
             //dynamic number: exchangename+fourdigitid
-            merkletree: Tree
+            merkletree: Tree,
+            Root_hash: root
         });
     // Save por in the database
     console.log("Save por in the database")
@@ -412,8 +423,51 @@ app.post('/generate_Merkletree',async (req,res)=>{
       date: req.query.date
     });
 //console.log("data285",data)
+
+
+
   res.send(data)
 })  
+
+
+app.get('/VerifyleafProof',async (req,res)=>{
+  try{
+
+  const leaf = req.query.leaf;
+  const data = await merkle_tree.findOne({
+    exchange_name: req.query.exchange_name,
+    date: req.query.date
+  });
+
+  //console.log("4311111111",data.merkletree)
+  const root = data.Root_hash;
+  var level = data.merkletree.level1
+  //console.log("treeeee",tree)
+var tree = await new MerkleTree(level)
+
+   //console.log("rooot",tree)  
+   const proof = await tree.getProof(leaf) ;
+
+   proof.forEach(x => { 
+ 
+     x.data = x.data.toString('hex') ;  
+   })
+//  console.log("11111111111111111111",proof);
+// console.log("2222222222222222222",root)
+ const verify = await tree.verify(proof, leaf, root) ;
+
+ // console.log("Vineeth's idea - ",verify)
+  if (verify) 
+  res.send('Proof validation successfully !! Thanks ');
+  else
+  res.send('Proof validation unsuccessfully !! Try Again').status(200) ; 
+  //res.send(root).status(200);
+// res.send("scucess")
+  }catch(err){
+    res.send(err)
+  }
+
+})
 
 // listen for requests
 app.listen(3000, () => {

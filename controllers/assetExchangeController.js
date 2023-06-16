@@ -31,6 +31,12 @@ exports.new_exchange = async (req, res) => {
     
    var exchange_name = req.body.exchange_name;  
    var date = req.body.date;    
+console.log("2222",req.body.exchange_name);
+console.log("2222",req.body.date);
+
+if (exchange_name === undefined || date === undefined) {
+  throw "exchange_name && date fileds are required"
+}
 
     // checking if same data is exist throw error
    const data = await Exchange_liabilities.find({
@@ -44,7 +50,7 @@ exports.new_exchange = async (req, res) => {
       console.log("dataaaaa",data)
    // console.log("req",req.body)
     var filepath = "uploads/" + req.file.filename;
-    // console.log("@@@@@@",req.file.filename)
+    console.log("@@@@@@",req.file.filename)
     
      let jsonArray= await csv().fromFile(filepath);
         var a = [];
@@ -99,6 +105,10 @@ exports.getexchange_list = async (req,res) => {
     try {
         const limitValue = req.query.limit || 10;
         const skipValue = req.query.skip || 0;
+
+        if (req.query.exchange_name === undefined || req.query.date === undefined) {
+          throw "exchange_name && date fileds are required"
+        }
      const data = await Exchange_liabilities.find({
         exchange_name: req.query.exchange_name,
         date: req.query.date
@@ -108,6 +118,7 @@ exports.getexchange_list = async (req,res) => {
 
    } catch (error) {
      console.log(error);
+     res.status(500).send(error)
    }}
    
    // without pagination 
@@ -116,7 +127,9 @@ exports.getexchange_list = async (req,res) => {
     console.log("aaaaa",req.query.exchange_name);
     console.log("bbbbbb",req.query.date);
     try {
-       
+      if (req.query.exchange_name === undefined || req.query.date === undefined) {
+        throw "exchange_name && date fileds are required"
+      }
      const data = await Exchange_liabilities.find({
         exchange_name: req.query.exchange_name,
         date: req.query.date
@@ -139,6 +152,7 @@ const final = []
 
    } catch (error) {
      console.log(error);
+     res.status(500).send(error)
    }}
 
 

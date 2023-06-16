@@ -9,25 +9,33 @@ exports.walletcsv = async (req, res) => {
     // upload csv
     try{
 
-    
+    console.log("working")
+    // console.log("sdsd",req)
    var exchange_name = req.body.exchange_name;   
    var date = req.body.date; 
-
+   if (exchange_name === undefined || date === undefined) {
+    throw "exchange_name && date fileds are required"
+  }
+  
    // checking if same data is exist throw error
    const data = await Exchange_Wallets.find({
-    exchange_name: req.query.exchange_name,
-    date: req.query.date
-   })
+    exchange_name: exchange_name,
+    date: date
+ })
+
    if (data.length != 0){
-    throw "exchange with date already exist"
+    console.log("inside if")
+    throw "reserve with date already exist"
   }
 
+  console.log("22222222222222",req.file)
 
    // console.log("req",req.body)
     var filepath = "uploads/" + req.file.filename;
-    // console.log("@@@@@@",req.file.filename)
+    console.log("@@@@@@",req.file.filename)
     
      let jsonArray= await csv().fromFile(filepath);
+    // console.log("31",jsonArray)
         var a = [];
         console.log(jsonArray)
             for (let i = 0; i<jsonArray.length; i++){
@@ -114,8 +122,8 @@ exports.updateowner = async (req, res) => {
 //without pagination
    exports.get_exchange_wallet_find = async (req,res) => {
     // Por.findOne(req.body.exchange_name)
-    console.log("aaaaa",req.query.exchange_name);
-    console.log("bbbbbb",req.query.Last_Updated);
+    //console.log("aaaaa",req.query.exchange_name);
+    //console.log("bbbbbb",req.query.Last_Updated);
 
     try {
 

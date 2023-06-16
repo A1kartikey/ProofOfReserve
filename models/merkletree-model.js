@@ -7,7 +7,8 @@ const merkletree = mongoose.Schema({
     merkletree: {
                 type: mongoose.SchemaTypes.Mixed,
                  required: true
-               }
+               },
+    Root_hash: String
     
 }, {
     timestamps: true
