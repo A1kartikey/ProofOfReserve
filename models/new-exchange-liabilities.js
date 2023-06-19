@@ -1,15 +1,17 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
-const Exchange_liabilities = mongoose.Schema({
+const Exchange_liabilities = mongoose.Schema(
+  {
     Customer_ID: String,
     Cryptoasset: String,
     Balance: String,
     ASOFDATE: String,
     exchange_name: String,
-    date: String
+    date: String,
+  },
+  {
+    timestamps: true,
+  }
+);
 
-}, {
-    timestamps: true
-});
-
-module.exports = mongoose.model('liabilities', Exchange_liabilities);
+module.exports = mongoose.model("liabilities", Exchange_liabilities);
