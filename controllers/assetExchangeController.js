@@ -1,11 +1,6 @@
 const csv = require("csvtojson");
 const crypto = require("crypto");
-// const {Asset} = require('../models/asset-cvs.model')
-// const { Exchange } = require("../models/exchange.model");
-
-// const ExchangeSchema = require("../models/exchange.model");
 const Assettype = require("../models/asset-type");
-
 const Exchange_liabilities = require("../models/new-exchange-liabilities");
 
 
