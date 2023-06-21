@@ -7,6 +7,10 @@ const Assettype = mongoose.Schema(
     // exchange_id: String,
     assetType: [{ type: String }],
     coustmer_id: [{ type: String }],
+    totalsum: {
+      type: mongoose.SchemaTypes.Mixed,
+      required: true,
+    },
   },
   {
     timestamps: true,

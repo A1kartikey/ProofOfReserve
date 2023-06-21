@@ -72,31 +72,26 @@ app.get("/totalassetamount", async (req, res) => {
   try {
     //const a = req.body.asset;
     var exchange_name = req.query.exchange_name;
-    console.log("s", exchange_name);
+
     var date = req.query.date;
-    console.log("eeee", date);
+
     var data = await Assert.getassettype(exchange_name, date);
     if (data == null) {
       throw "dates not found";
     }
-    //console.log(data.assetType)
+
     let a = data.assetType;
     var final = [];
     for (let i = 0; i < a.length; i++) {
-      //console.log(a[i])
-      //console.log(exchange_name)
       var asset = a[i];
       var result = await Assert.total(exchange_name, date, asset);
       if (result == null) {
         throw "balance not found";
       }
       final.push(result);
-
-      //console.log(result)
     }
 
     res.send(final);
-    //res.send("scucess")
   } catch (error) {
     res.status(404).send(error);
   }
@@ -108,133 +103,49 @@ app.get("/totalwalletamount", async (req, res) => {
   try {
     //const a = req.body.asset;
     var exchange_name = req.query.exchange_name;
-    console.log("s", exchange_name);
+
     var date = req.query.date;
-    console.log("eeee", date);
+
     var data = await Wallet.getassettype(exchange_name, date);
     if (data == null) {
       throw "dates not found";
     }
-    //console.log(data.assetType)
+
     let a = data.assetType;
     var final = [];
     for (let i = 0; i < a.length; i++) {
-      //console.log(a[i])
-      //console.log(exchange_name)
       var asset = a[i];
       var result = await Wallet.total(exchange_name, date, asset);
       if (result == null) {
         throw "balance not found";
       }
       final.push(result);
-
-      //console.log(result)
     }
 
     res.send(final);
-    //res.send("scucess")
   } catch (error) {
     res.status(404).send(error);
   }
 });
 
+app.post("/test", async (req, res) => {
+  var exchange_name = req.body.exchange_name;
+
+  var date = req.body.date;
+
+  var data = await Assert.getassettype(exchange_name, date);
+
+  res.send(data);
+});
 //
-app.get("/solvency-liabilities", async (req, res) => {
-  try {
-    var exchange_name = req.query.exchange_name;
-    var dates = await Assert.get_dates(exchange_name);
-    if (dates == null) {
-      throw "dates not found";
-    }
-    let finalresult = [];
-    for (let i = 0; i < dates.length; i++) {
-      var data = await Assert.getassettype(exchange_name, dates[i]);
-      if (data == null) {
-        throw "assettype not found";
-      }
-      console.log(dates[i]);
-      let a = data.assetType;
-      var final = [];
-      for (let j = 0; j < a.length; j++) {
-        console.log(a[j]);
-        //console.log(exchange_name)
-        var asset = a[j];
-        var result = await Assert.total(exchange_name, dates[i], asset);
-        final.push(result);
-
-        //console.log(result)
-      }
-      console.log("final", final);
-
-      let r = {
-        date: dates[i],
-        result: final,
-      };
-      finalresult.push(r);
-    }
-
-    const aa = {
-      name: "solvency-liabilities",
-      result: finalresult,
-    };
-    res.status(200).send(aa);
-  } catch (error) {
-    res.status(404).send(error);
-  }
-});
-
-app.get("/solvency-wallet", async (req, res) => {
-  try {
-    var exchange_name = req.query.exchange_name;
-    var dates = await Wallet.get_dates(exchange_name);
-    if (dates == null) {
-      throw "dates not found";
-    }
-    let finalresult = [];
-    for (let i = 0; i < dates.length; i++) {
-      var data = await Wallet.getassettype(exchange_name, dates[i]);
-      if (data == null) {
-        throw "assettype not found";
-      }
-      console.log(dates[i]);
-      let a = data.assetType;
-      var final = [];
-      for (let j = 0; j < a.length; j++) {
-        console.log(a[j]);
-        //console.log(exchange_name)
-        var asset = a[j];
-        var result = await Wallet.total(exchange_name, dates[i], asset);
-        final.push(result);
-
-        //console.log(result)
-      }
-      console.log("final", final);
-
-      let r = {
-        date: dates[i],
-        result: final,
-      };
-      finalresult.push(r);
-    }
-    const aa = {
-      name: "solvency-wallet",
-      result: finalresult,
-    };
-
-    res.status(200).send(aa);
-  } catch (error) {
-    res.status(404).send(error);
-  }
-});
 
 app.post("/generateleafhash", async (req, res) => {
   try {
     //const a = req.body.asset;
-    console.log(req.body, "body");
+
     var exchange_name = req.body.exchange_name;
-    console.log("exchange_name", exchange_name);
+
     var date = req.body.date;
-    console.log("date", date);
 
     if (exchange_name === undefined || date === undefined) {
       throw "exchange_name && date fileds are required";
@@ -242,33 +153,42 @@ app.post("/generateleafhash", async (req, res) => {
 
     var data = await Assert.getassettype(exchange_name, date);
     if (data == null) {
-      throw "coustmer_id not found";
+      throw "data not found";
     }
-    //console.log(data.coustmer_id)
-    let c = data.coustmer_id;
-    console.log(c);
-    let dataaaa;
-    let result = [];
-    for (let i = 0; i < c.length; i++) {
-      let id = c[i];
-      dataaaa = await Assert.get_liabilities(exchange_name, date, id);
-      result.push(dataaaa);
+
+    var jsonarr = data.totalsum;
+    var final = [];
+    for (let i = 0; i < jsonarr.length; i++) {
+      const h = jsonarr[i].Customer_ID;
+      const dd = parseFloat(jsonarr[i].sum);
+      let dat = jsonarr[i].date;
+     
+      const k = h + dd + dat;
+    
+      const g = crypto.createHash("sha256").update(k).digest("hex");
+      var result = {
+        ID: h,
+        hash: g,
+        asofdate: dat,
+      };
+      final.push(result);
     }
-    console.log("259", result[0]);
     const leaf_hash = new Leafhash({
-      // date: new Date().valueOf(),
+      
       date: req.body.date,
       exchange_name: req.body.exchange_name,
       //dynamic number: exchangename+fourdigitid
-      leafhash: result,
+      leafhash: final,
     });
     // Save por in the database
-    //console.log("ressss",result)
-    console.log("269");
+
     const dd = await leaf_hash.save();
-    console.log("270000000000000000000");
-    res.send(dd);
-    //res.send("scucess")
+
+    let ressult = {
+      result: dd,
+      message: "exchange coustmers leaf generated",
+    };
+    res.send(ressult);
   } catch (error) {
     res.status(404).send(error);
   }
@@ -279,7 +199,7 @@ app.get("/getleafhash", async (req, res) => {
     exchange_name: req.query.exchange_name,
     date: req.query.date,
   });
-  console.log("data285", data);
+
   res.send(data);
 });
 
@@ -289,8 +209,9 @@ app.get("/solvency", async (req, res) => {
   var start_date = req.query.start_date;
   var end_date = req.query.end_date;
   const a = await Solvency.solvency_liabilities(exchange_name);
-  console.log("29888888888888888888", a.result);
+  
   const data = a.result;
+
   var ed = new Date(end_date).getTime();
   var sd = new Date(start_date).getTime();
 
@@ -298,7 +219,7 @@ app.get("/solvency", async (req, res) => {
     var time = new Date(d.date).getTime();
     return sd <= time && time <= ed;
   });
-  console.log("3066666", solvency_liabilities);
+
 
   const b = await Solvency.solvency_reserves(exchange_name);
 
@@ -320,40 +241,30 @@ app.get("/solvency", async (req, res) => {
 
 app.post("/generate_Merkletree", async (req, res) => {
   try {
-    //const a = req.body.asset;
+   
     var exchange_name = req.body.exchange_name;
-    //console.log("s",exchange_name)
+
     var date = req.body.date;
     var tree = 0;
-    // console.log("eeee",date)
-    var data = await Assert.getassettype(exchange_name, date);
+   
+    const data = await Leafhash.findOne({
+      exchange_name: exchange_name,
+      date: date,
+    });
     if (data == null) {
       throw "coustmer_id not found";
     }
-    //console.log(data.coustmer_id)
-    let c = data.coustmer_id;
-    //console.log(c)
-    let dataaaa;
-    let result = [];
-    for (let i = 0; i < c.length; i++) {
-      let id = c[i];
-      dataaaa = await Assert.get_liabilities(exchange_name, date, id);
-      result.push(dataaaa);
-    }
-    console.log("259", result[0]);
-    var concatResult = [];
-    var Tree = {};
-    result.forEach((element) => {
-      concatResult.push(element.ID + element.Total + element.asofdate);
-    });
-    //console.log("35999999999",concatResult)
-    var hashArray = [];
-    var hashOfElement;
-    concatResult.forEach((element) => {
-      const h = crypto.createHash("sha256").update(element).digest("hex");
+  
+    const leafs = data.leafhash;
+   
+    let hashArray = [];
 
-      hashArray.push(h);
+    leafs.forEach((element) => {
+      hashArray.push(element.hash);
     });
+    
+    var Tree = {};
+
     tree = new MerkleTree(hashArray);
     var arry = [];
     var foo = 1;
@@ -367,27 +278,27 @@ app.post("/generate_Merkletree", async (req, res) => {
       Tree["level" + `${foo}`] = arry;
       foo++;
     });
-    //console.log('Tree111111111111111111: ',Tree) ;
+    
 
     var root = tree.getRoot().toString("hex");
 
     //var roothash = await new MerkleTree(level)
-    console.log("3333333333333333333333333333", root);
+ 
     // Save merkle_tree in the database
     const mt = new merkle_tree({
-      // date: new Date().valueOf(),
+    
       date: req.body.date,
       exchange_name: req.body.exchange_name,
-      //dynamic number: exchangename+fourdigitid
+     
       merkletree: Tree,
       Root_hash: root,
     });
     // Save por in the database
-    console.log("Save por in the database");
+   
     const dd = await mt.save();
-    console.log("39899");
+
     res.send(dd);
-    //res.send("scucess")
+  
   } catch (error) {
     res.status(404).send(error);
   }
@@ -398,7 +309,7 @@ app.get("/get_Merkletree", async (req, res) => {
     exchange_name: req.query.exchange_name,
     date: req.query.date,
   });
-  //console.log("data285",data)
+
 
   res.send(data);
 });
@@ -411,27 +322,25 @@ app.get("/VerifyleafProof", async (req, res) => {
       date: req.query.date,
     });
 
-    //console.log("4311111111",data.merkletree)
+   
     const root = data.Root_hash;
     var level = data.merkletree.level1;
-    //console.log("treeeee",tree)
+
     var tree = await new MerkleTree(level);
 
-    //console.log("rooot",tree)
+
     const proof = await tree.getProof(leaf);
 
     proof.forEach((x) => {
       x.data = x.data.toString("hex");
     });
-    //  console.log("11111111111111111111",proof);
-    // console.log("2222222222222222222",root)
+
     const verify = await tree.verify(proof, leaf, root);
 
-    // console.log("Vineeth's idea - ",verify)
+   
     if (verify) res.send("Proof validation successfully !! Thanks ");
     else res.send("Proof validation unsuccessfully !! Try Again").status(200);
-    //res.send(root).status(200);
-    // res.send("scucess")
+    
   } catch (err) {
     res.send(err);
   }

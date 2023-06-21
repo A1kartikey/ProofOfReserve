@@ -1,26 +1,45 @@
+var a = ["vin", "kar", "vip"];
+
 var d = [
-    {
-        "Customer_ID": "0xA1",
-        "Cryptoasset": "btc",
-        "Balance": "1.0122938",
-        "ASOFDATE": "6/14/2023",
-     
-    },
-    {
-        "Customer_ID": "0XA2",
-        "Cryptoasset": "eth",
-        "Balance": "1.0122939",
-        "ASOFDATE": "6/14/2023",
- 
-    },
-]
+  {
+    name: "vin",
+    balance: "1",
+  },
+  {
+    name: "vin",
+    balance: "2",
+  },
+  {
+    name: "kar",
+    balance: "1",
+  },
+  {
+    name: "vip",
+    balance: "1",
+  },
+];
 
-const a = Object.keys(d[0]);
+let ass;
+let total = [];
+for (let j = 0; j < a.length; j++) {
+  //  console.log(a[j])
+  let sum = 0;
+  for (let i = 0; i < d.length; i++) {
+    //console.log(d[i]);
 
+    if (d[i].name == a[j]) {
+      //console.log("11",d[i])
+      sum = sum + parseFloat(d[i].balance);
 
-const hasValue = a.includes('a','a');
-
-if ( hasValue ){
-    console.log("yess")
+      ass = {
+        name: d[i].name,
+        sums: sum,
+      };
+    }
+  }
+  //console.log("ss",ass)
+  total.push(ass);
 }
-console.log(a)
+
+console.log("ssss", total);
+//console.log(d[i].name)

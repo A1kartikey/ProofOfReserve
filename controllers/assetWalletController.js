@@ -40,9 +40,10 @@ exports.walletcsv = async (req, res) => {
       VERIFIED_DATE: "",
     }));
 
-    const a = jsonArray.map((value) => value.Cryptoasset);
-
+    const a = jsonArray.map((value) => value.CRYPTOASSET);
+   //console.log("44",a)
     const assettype = [...new Set(a)];
+    //console.log("46",assettype)
     const asset = new Wallet_Assettype({
       // date: new Date().valueOf(),
       date: req.body.date,
@@ -158,7 +159,7 @@ exports.getassettype = async (exchange_name, date) => {
     if (data == null) {
       throw "data not found";
     }
-    //console.log("data",data)
+    console.log("data",data)
     return data;
   } catch (error) {
     return error;
