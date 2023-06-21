@@ -7,7 +7,6 @@ const Wallet_Assettype = require("../models/new-asset-wallet");
 exports.walletcsv = async (req, res) => {
   // upload csv
   try {
-    // console.log("sdsd",req)
     var exchange_name = req.body.exchange_name;
     var date = req.body.date;
     if (exchange_name === undefined || date === undefined) {
@@ -24,11 +23,7 @@ exports.walletcsv = async (req, res) => {
       throw "reserve with date already exist";
     }
 
-    //console.log("22222222222222",req.file)
-
-    // console.log("req",req.body)
     var filepath = "uploads/" + req.file.filename;
-    //console.log("@@@@@@",req.file.filename)
 
     let jsonArray = await csv().fromFile(filepath);
 
@@ -41,14 +36,13 @@ exports.walletcsv = async (req, res) => {
     }));
 
     const a = jsonArray.map((value) => value.CRYPTOASSET);
-   //console.log("44",a)
+
     const assettype = [...new Set(a)];
-    //console.log("46",assettype)
+
     const asset = new Wallet_Assettype({
-      // date: new Date().valueOf(),
       date: req.body.date,
       exchange_name: req.body.exchange_name,
-      //dynamic number: exchangename+fourdigitid
+
       assetType: assettype,
     });
     const dd = await asset.save();
@@ -58,7 +52,6 @@ exports.walletcsv = async (req, res) => {
 
     const d = await Exchange_Wallets.insertMany(jsonarray);
 
-    //console.log(jsonArray)
     res.status(200).send(d);
   } catch (error) {
     res.status(500).send(error);
@@ -67,7 +60,6 @@ exports.walletcsv = async (req, res) => {
 
 exports.updateowner = async (req, res) => {
   try {
-    //  console.log(req.body)
     const filter = {
       WALLETADDRESS: req.body.wallet_address,
       exchange_name: req.body.exchange_name,
@@ -80,7 +72,7 @@ exports.updateowner = async (req, res) => {
     const opts = { new: true };
 
     let doc = await Exchange_Wallets.findOneAndUpdate(filter, update, opts);
-    //console.log("data",doc)
+
     if (doc == null) {
       throw "data not found";
     }
@@ -91,10 +83,6 @@ exports.updateowner = async (req, res) => {
 };
 
 exports.exchange_wallet_find = async (req, res) => {
-  // Por.findOne(req.body.exchange_name)
-  //console.log("aaaaa",req.query.exchange_name);
-  //console.log("bbbbbb",req.query.Last_Updated);
-
   try {
     const limitValue = req.query.limit || 10;
     const skipValue = req.query.skip || 0;
@@ -117,10 +105,6 @@ exports.exchange_wallet_find = async (req, res) => {
 
 //without pagination
 exports.get_exchange_wallet_find = async (req, res) => {
-  // Por.findOne(req.body.exchange_name)
-  //console.log("aaaaa",req.query.exchange_name);
-  //console.log("bbbbbb",req.query.Last_Updated);
-
   try {
     const data = await Exchange_Wallets.find({
       exchange_name: req.query.exchange_name,
@@ -129,7 +113,7 @@ exports.get_exchange_wallet_find = async (req, res) => {
     if (data == null) {
       throw "data not found";
     }
-    //console.log("ssssssssssss",data[0])
+
     let final = [];
     for (let i = 0; i < data.length; i++) {
       let a = {
@@ -150,7 +134,6 @@ exports.get_exchange_wallet_find = async (req, res) => {
 };
 
 exports.getassettype = async (exchange_name, date) => {
-  // Por.findOne(req.body.exchange_name)
   try {
     const data = await Wallet_Assettype.findOne({
       exchange_name: exchange_name,
@@ -159,7 +142,7 @@ exports.getassettype = async (exchange_name, date) => {
     if (data == null) {
       throw "data not found";
     }
-    console.log("data",data)
+    console.log("data", data);
     return data;
   } catch (error) {
     return error;
@@ -167,7 +150,6 @@ exports.getassettype = async (exchange_name, date) => {
 };
 
 exports.get_dates = async (exchange_name) => {
-  // Por.findOne(req.body.exchange_name)
   try {
     const data = await Wallet_Assettype.find({
       exchange_name: exchange_name,
@@ -176,7 +158,7 @@ exports.get_dates = async (exchange_name) => {
       throw "data not found";
     }
     var final = [];
-    //console.log("data--get_dates",data)
+
     for (let i = 0; i < data.length; i++) {
       final.push(data[i].date);
     }
@@ -188,7 +170,6 @@ exports.get_dates = async (exchange_name) => {
 };
 
 exports.total = async (exchange_name, date, asset) => {
-  // Por.findOne(req.body.exchange_name)
   try {
     const data = await Exchange_Wallets.find({
       exchange_name: exchange_name,
@@ -201,11 +182,10 @@ exports.total = async (exchange_name, date, asset) => {
     var sum = 0;
     for (let i = 0; i < d.length; i++) {
       if (d[i].CRYPTOASSET == asset) {
-        //console.log(d[i])
         sum = sum + parseFloat(d[i].BALANCE);
       }
     }
-    //console.log("aaaa",sum)
+
     var result = {
       Asset: asset,
       Total: sum,
@@ -217,7 +197,6 @@ exports.total = async (exchange_name, date, asset) => {
 };
 
 exports.getdates = async (req, res) => {
-  // Por.findOne(req.body.exchange_name)
   try {
     const data = await Wallet_Assettype.find({
       exchange_name: req.query.exchange_name,
@@ -226,7 +205,7 @@ exports.getdates = async (req, res) => {
       throw "data not found";
     }
     var final = [];
-    //console.log("data--get_dates",data)
+
     for (let i = 0; i < data.length; i++) {
       final.push(data[i].date);
     }
@@ -237,7 +216,6 @@ exports.getdates = async (req, res) => {
     };
     res.status(200).json(a);
   } catch (error) {
-    //console.log(error);
     res.status(500).send(error);
   }
 };

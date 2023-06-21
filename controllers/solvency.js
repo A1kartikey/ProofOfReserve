@@ -15,19 +15,14 @@ exports.solvency_liabilities = async (exchange_name) => {
       if (data == null) {
         throw "assettype not found";
       }
-      //console.log(dates[i])
+
       let a = data.assetType;
       var final = [];
       for (let j = 0; j < a.length; j++) {
-        //console.log(a[j])
-        //console.log(exchange_name)
         var asset = a[j];
         var result = await Assert.total(exchange_name, dates[i], asset);
         final.push(result);
-
-        //console.log(result)
       }
-      //console.log("final",final)
 
       let r = {
         date: dates[i],
@@ -53,30 +48,25 @@ exports.solvency_reserves = async (exchange_name) => {
     //var exchange_name= req.query.exchange_name;
 
     var dates = await Wallet.get_dates(exchange_name);
-    //console.log("datessssssssssss,",dates)
+
     if (dates == null) {
       throw "dates not found";
     }
     let finalresult = [];
     for (let i = 0; i < dates.length; i++) {
       var data = await Wallet.getassettype(exchange_name, dates[i]);
-      //console.log("77",data)
+
       if (data == null) {
         throw "assettype not found";
       }
-      // console.log(dates[i])
+
       let a = data.assetType;
       var final = [];
       for (let j = 0; j < a.length; j++) {
-        //console.log(a[j])
-        //console.log(exchange_name)
         var asset = a[j];
         var result = await Wallet.total(exchange_name, dates[i], asset);
         final.push(result);
-
-        //console.log(result)
       }
-      //console.log("final",final)
 
       let r = {
         date: dates[i],
