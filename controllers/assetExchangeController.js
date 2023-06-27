@@ -6,13 +6,14 @@ const Exchange_liabilities = require("../models/new-exchange-liabilities");
 exports.new_exchange = async (req, res) => {
   // upload csv
   try {
+    console.log("1")
     var exchange_name = req.body.exchange_name;
     var date = req.body.date;
 
     if (exchange_name === undefined || date === undefined) {
       throw "exchange_name && date fileds are required";
     }
-
+console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
     // checking if same data is exist throw error
     const data = await Exchange_liabilities.find({
       exchange_name: exchange_name,
@@ -22,27 +23,26 @@ exports.new_exchange = async (req, res) => {
     if (data.length != 0) {
       throw "exchange with date already exist";
     }
-
+console.log("000000000000000000000000000000000")
     var filepath = "uploads/" + req.file.filename;
 
     let jsonArray = await csv().fromFile(filepath);
-
+console.log("0101010101010101")
     var jsonarray = jsonArray.map((v) => ({
       ...v,
       exchange_name: exchange_name,
       date: date,
     }));
+    console.log("1111111111111111111111111111")
 
     var a = jsonArray.map((value) => value.Cryptoasset);
-    var aa = jsonArray.map((value) => value.Customer_ID);
 
     const assettype = [...new Set(a)];
-    const coustmerid = [...new Set(aa)];
-
+console.log("aaaaa",assettype)
     let obj = {};
     let newa = [];
     let newd = jsonArray;
-
+console.log("2222222222222222222222222222222222")
     newd.forEach((element, j) => {
       var TotalBalance = 0;
       var Customer_IDToCheck = element.Customer_ID;
@@ -61,7 +61,7 @@ exports.new_exchange = async (req, res) => {
       };
       newa.push(obj);
     });
-
+console.log("33333333333333333333333333333333333333333333333")
     // saving cryptoasset types in new schema
     const asset = new Assettype({
       // date: new Date().valueOf(),
@@ -69,18 +69,21 @@ exports.new_exchange = async (req, res) => {
       exchange_name: req.body.exchange_name,
 
       assetType: assettype,
-      coustmer_id: coustmerid,
       totalsum: newa,
     });
     // Save por in the database
+  
     const dd = await asset.save();
     if (dd == null) {
       throw new Error("assettype not saved");
     }
-
+    console.log("44444444444444444444444444444444444")
     const d = await Exchange_liabilities.insertMany(jsonarray);
-
-    res.status(200).send(d);
+  console .log("data uploaded ");
+  if (!d){
+    throw "data not uploaded"
+  }
+    res.status(200).send("scucess uploaded libabilities in db");
   } catch (error) {
     res.status(500).send(error);
   }
@@ -117,8 +120,8 @@ exports.getexchange_list = async (req, res) => {
 // without pagination
 exports.get_exchange_list = async (req, res) => {
   // Por.findOne(req.body.exchange_name)
-  console.log("aaaaa", req.query.exchange_name);
-  console.log("bbbbbb", req.query.date);
+  console.log("exchange_name", req.query.exchange_name);
+  console.log("date", req.query.date);
   try {
     if (req.query.exchange_name === undefined || req.query.date === undefined) {
       throw "exchange_name && date fileds are required";
@@ -131,6 +134,7 @@ exports.get_exchange_list = async (req, res) => {
       throw "data not found";
     }
     const final = [];
+    console.log("11111111111111111")
     for (let i = 0; i < data.length; i++) {
       let a = {
         Customer_ID: data[i].Customer_ID,
@@ -140,8 +144,9 @@ exports.get_exchange_list = async (req, res) => {
       };
       final.push(a);
     }
-
+console.log("222222222222222222222222222222222")
     res.status(200).send(final);
+    console.log("333333")
   } catch (error) {
     res.status(500).send(error);
   }
@@ -211,7 +216,7 @@ exports.totalbalance = async (req, res) => {
     };
     res.status(200).send(result);
   } catch (error) {
-    res.send(error);
+    res.status(500).send(error);
   }
 };
 

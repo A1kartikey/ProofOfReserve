@@ -51,8 +51,11 @@ exports.walletcsv = async (req, res) => {
     }
 
     const d = await Exchange_Wallets.insertMany(jsonarray);
-
-    res.status(200).send(d);
+    if (!d){
+      throw "data not uploaded"
+    }
+      res.status(200).send("scucess uploaded reserves in db");
+    //res.status(200).send(d);
   } catch (error) {
     res.status(500).send(error);
   }
@@ -76,7 +79,7 @@ exports.updateowner = async (req, res) => {
     if (doc == null) {
       throw "data not found";
     }
-    res.status(200).send(doc);
+    res.status(200).send("Fields updated");
   } catch (error) {
     res.status(500).send(error);
   }

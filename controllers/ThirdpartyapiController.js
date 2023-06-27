@@ -26,6 +26,6 @@ exports.create = async (req, res) => {
         res.status(500).send(error);
       });
   } catch (error) {
-    res.send(error);
+    res.status(500).send(error);
   }
 };

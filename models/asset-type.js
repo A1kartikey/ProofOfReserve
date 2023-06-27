@@ -6,7 +6,6 @@ const Assettype = mongoose.Schema(
     exchange_name: String,
     // exchange_id: String,
     assetType: [{ type: String }],
-    coustmer_id: [{ type: String }],
     totalsum: {
       type: mongoose.SchemaTypes.Mixed,
       required: true,

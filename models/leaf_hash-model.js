@@ -4,6 +4,7 @@ const leaf_hash = mongoose.Schema(
   {
     date: String,
     exchange_name: String,
+    Salting: String,
     leafhash: {
       type: mongoose.SchemaTypes.Mixed,
       required: true,

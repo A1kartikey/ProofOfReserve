@@ -12,10 +12,10 @@ exports.register = function (req, res) {
   newUser
     .save()
     .then((user) => {
-      res.json(user);
+      res.status(200).json(user);
     })
     .catch((err) => {
-      res.status(400).send({
+      res.status(500).send({
         message: err,
       });
     });
@@ -42,7 +42,7 @@ exports.sign_in = async (req, res) => {
 
     //res.send(user)
     //console.log("password",data.hash_password)
-    return res.send({
+    return res.status(200).send({
       token: jwt.sign(
         {
           email: data.email,
@@ -55,7 +55,7 @@ exports.sign_in = async (req, res) => {
       ),
     });
   } catch (error) {
-    res.status(500).send(error);
+    res.status(404).send(error);
   }
 };
 
