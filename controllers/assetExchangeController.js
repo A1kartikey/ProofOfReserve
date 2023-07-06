@@ -32,6 +32,7 @@ console.log("0101010101010101")
       ...v,
       exchange_name: exchange_name,
       date: date,
+      ASOFDATE: date
     }));
     console.log("1111111111111111111111111111")
 
@@ -39,14 +40,13 @@ console.log("0101010101010101")
 
     const assettype = [...new Set(a)];
 console.log("aaaaa",assettype)
-    let obj = {};
     let newa = [];
     let newd = jsonArray;
-console.log("2222222222222222222222222222222222")
+console.log("2222222222222222222222222222222222",)
     newd.forEach((element, j) => {
       var TotalBalance = 0;
       var Customer_IDToCheck = element.Customer_ID;
-      var newdate = element.ASOFDATE;
+      //var newdate = element.date;
       newd.forEach((element, i) => {
         if (Customer_IDToCheck == element.Customer_ID) {
           TotalBalance += parseFloat(element.Balance);
@@ -56,12 +56,12 @@ console.log("2222222222222222222222222222222222")
       });
       obj = {
         Customer_ID: Customer_IDToCheck,
-        sum: TotalBalance,
-        date: newdate,
+        sum: Math.round(TotalBalance*1000000000000)/1000000000000,
+        date: req.body.date,
       };
       newa.push(obj);
     });
-console.log("33333333333333333333333333333333333333333333333")
+console.log("33333333333333333333333333333333333333333333333",newa)
     // saving cryptoasset types in new schema
     const asset = new Assettype({
       // date: new Date().valueOf(),
@@ -227,6 +227,7 @@ exports.getassettype = async (exchange_name, date) => {
       exchange_name: exchange_name,
       date: date,
     });
+    console.log("Data",data)
     if (data == null) {
       throw "data not found";
     }
@@ -257,7 +258,7 @@ exports.total = async (exchange_name, date, asset) => {
 
     var result = {
       Asset: asset,
-      Total: sum,
+      Total:  Math.round(sum*1000000000000)/1000000000000
     };
     return result;
   } catch (error) {

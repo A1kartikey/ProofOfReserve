@@ -6,6 +6,7 @@ var mongoose = require("mongoose"),
   User = mongoose.model("User");
 
 exports.register = function (req, res) {
+  console.log("data",req.body)
   var newUser = new User(req.body);
   newUser.hash_password = bcrypt.hashSync(req.body.password, 10);
 

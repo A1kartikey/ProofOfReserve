@@ -64,11 +64,10 @@ app.get("/", (req, res) => {
 
 require("./routes/routes.js")(app);
 
-
 app.get("/totalassetamount", async (req, res) => {
   try {
     //const a = req.body.asset;
-    console.log("111111")
+    console.log("111111");
     var exchange_name = req.query.exchange_name;
 
     var date = req.query.date;
@@ -80,12 +79,12 @@ app.get("/totalassetamount", async (req, res) => {
     }
 
     let a = data.assetType;
-    console.log("data",a)
+    //console.log("data", a);
     var final = [];
     for (let i = 0; i < a.length; i++) {
-      var asset = a[i]
+      var asset = a[i];
       var result = await Assert.total(exchange_name, date, asset);
-      console.log("data",result)
+      //console.log("data", result);
       if (result == null) {
         throw "balance not found";
       }
@@ -94,7 +93,6 @@ app.get("/totalassetamount", async (req, res) => {
 
     res.status(200).send(final);
   } catch (error) {
-
     res.status(404).send(error);
   }
 });
@@ -157,12 +155,22 @@ app.post("/generateleafhash", async (req, res) => {
       throw "exchange_name && date fileds are required";
     }
 
+    const dataleaf = await Leafhash.findOne({
+      exchange_name: exchange_name,
+      date: date,
+    });
+   
+    if (dataleaf != null) {
+      throw "leafhash with date already exist";
+    }
+
     var data = await Assert.getassettype(exchange_name, date);
     if (data == null) {
       throw "data not found";
     }
 
     var jsonarr = data.totalsum;
+  
     var final = [];
     for (let i = 0; i < jsonarr.length; i++) {
       const h = jsonarr[i].Customer_ID;
@@ -191,7 +199,7 @@ app.post("/generateleafhash", async (req, res) => {
     const dd = await leaf_hash.save();
 
     let ressult = {
-      result: dd,
+      
       message: "exchange coustmers leaf generated",
     };
     res.status(200).send(ressult);
@@ -206,6 +214,26 @@ app.get("/getleafhash", async (req, res) => {
     date: req.query.date,
   });
 
+
+
+
+  /**Vipin:Commented as the data issue while downloading the CSV and display */
+  /*
+  const datas = data.leafhash;
+  let customResponse = [];
+  customResponse = datas.map((e, idx) => {
+    return {
+      SNO: idx + 1,
+      CUSTOMERID: e.ID,
+      LEAFHASH: e.hash,
+      ASOFDATE: e.asofdate,
+    };
+  });
+
+  const newData = { ...data, leafhash: customResponse };
+
+  res.send(newData);
+  */
   res.send(data);
 });
 
@@ -251,6 +279,14 @@ app.post("/generate_Merkletree", async (req, res) => {
     var date = req.body.date;
     var tree = 0;
 
+    const dataMK = await merkle_tree.findOne({
+      exchange_name: exchange_name,
+      date: date,
+    });
+
+    if (dataMK != null) {
+      throw "merkletree with date already exist";
+    }
     const data = await Leafhash.findOne({
       exchange_name: exchange_name,
       date: date,
@@ -299,7 +335,11 @@ app.post("/generate_Merkletree", async (req, res) => {
 
     const dd = await mt.save();
 
-    res.status(200).send(dd);
+    let ressult = {
+      
+      message: "exchange coustmers merkletree generated",
+    };
+    res.status(200).send(ressult);
   } catch (error) {
     res.status(404).send(error);
   }
@@ -317,11 +357,17 @@ app.get("/get_Merkletree", async (req, res) => {
 app.get("/VerifyleafProof", async (req, res) => {
   try {
     const leaf = req.query.leaf;
+   
+    console.log("1",req.query.exchange_name)
+    console.log("2",req.query.date)
+    console.log("3",req.query.leaf)
     const data = await merkle_tree.findOne({
       exchange_name: req.query.exchange_name,
       date: req.query.date,
     });
-
+    if (data == null) {
+      throw "data not found";
+    }
     const root = data.Root_hash;
     var level = data.merkletree.level1;
 
@@ -335,10 +381,10 @@ app.get("/VerifyleafProof", async (req, res) => {
 
     const verify = await tree.verify(proof, leaf, root);
 
-    if (verify) res.send("Proof validation successfully !! Thanks ");
-    else res.send("Proof validation unsuccessfully !! Try Again").status(200);
+    if (verify) res.send("Proof validation successfully !! Thanks ").status(200);
+    else res.send("Proof validation unsuccessfully !! Try Again").status(404);
   } catch (err) {
-    res.send(err);
+    res.send(err).status(404);
   }
 });
 

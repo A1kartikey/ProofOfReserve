@@ -18,6 +18,9 @@ module.exports = (app) => {
   app.post("/new-upload", upload.single("file"), assetcsv.new_exchange);
 
   app.post("/walletcsv", upload.single("file"), wallet.walletcsv);
+
+  // newwalletcsv
+  
   //app.get('/allasset', assetcsv.read);
   app.get("/exchangelist", assetcsv.getexchange_list);
 

@@ -1,9 +1,70 @@
 const csv = require("csvtojson");
 //const WalletSchema = require('../models/asset-wallet');
-
+const axios = require("axios");
 const Exchange_Wallets = require("../models/new-exchange-wallet");
 const Wallet_Assettype = require("../models/new-asset-wallet");
 
+const thridpartyapi = require("./ThirdpartyapiController");
+
+// exports.walletcsv = async (req, res) => {
+//   // upload csv
+//   try {
+//     var exchange_name = req.body.exchange_name;
+//     var date = req.body.date;
+//     if (exchange_name === undefined || date === undefined) {
+//       throw "exchange_name && date fileds are required";
+//     }
+
+//     // checking if same data is exist throw error
+//     const data = await Exchange_Wallets.find({
+//       exchange_name: exchange_name,
+//       date: date,
+//     });
+
+//     if (data.length != 0) {
+//       throw "reserve with date already exist";
+//     }
+
+//     var filepath = "uploads/" + req.file.filename;
+
+//     let jsonArray = await csv().fromFile(filepath);
+
+//     const jsonarray = jsonArray.map((v) => ({
+//       ...v,
+//       exchange_name: exchange_name,
+//       date: date,
+//       ASOFDATE: date,
+//       VERIFIED_OWNERSHIP: "",
+//       VERIFIED_DATE: "",
+//     }));
+
+//     const a = jsonArray.map((value) => value.CRYPTOASSET);
+
+//     const assettype = [...new Set(a)];
+
+//     const asset = new Wallet_Assettype({
+//       date: req.body.date,
+//       exchange_name: req.body.exchange_name,
+
+//       assetType: assettype,
+//     });
+//     const dd = await asset.save();
+//     if (dd == null) {
+//       throw new Error("assettype not saved");
+//     }
+
+//     const d = await Exchange_Wallets.insertMany(jsonarray);
+//     if (!d) {
+//       throw "data not uploaded";
+//     }
+//     res.status(200).send("scucess uploaded reserves in db");
+//     //res.status(200).send(d);
+//   } catch (error) {
+//     res.status(500).send(error);
+//   }
+// };
+
+// updated above api
 exports.walletcsv = async (req, res) => {
   // upload csv
   try {
@@ -13,15 +74,15 @@ exports.walletcsv = async (req, res) => {
       throw "exchange_name && date fileds are required";
     }
 
-    // checking if same data is exist throw error
-    const data = await Exchange_Wallets.find({
-      exchange_name: exchange_name,
-      date: date,
-    });
+    // // checking if same data is exist throw error
+    // const data = await Exchange_Wallets.find({
+    //   exchange_name: exchange_name,
+    //   date: date,
+    // });
 
-    if (data.length != 0) {
-      throw "reserve with date already exist";
-    }
+    // if (data.length != 0) {
+    //   throw "reserve with date already exist";
+    // }
 
     var filepath = "uploads/" + req.file.filename;
 
@@ -31,10 +92,11 @@ exports.walletcsv = async (req, res) => {
       ...v,
       exchange_name: exchange_name,
       date: date,
+      ASOFDATE: date,
       VERIFIED_OWNERSHIP: "",
       VERIFIED_DATE: "",
     }));
-
+    console.log("da",jsonarray)
     const a = jsonArray.map((value) => value.CRYPTOASSET);
 
     const assettype = [...new Set(a)];
@@ -50,13 +112,50 @@ exports.walletcsv = async (req, res) => {
       throw new Error("assettype not saved");
     }
 
-    const d = await Exchange_Wallets.insertMany(jsonarray);
-    if (!d){
-      throw "data not uploaded"
+   
+
+    const delay = (ms) => new Promise((r) => setTimeout(r, ms));
+
+    for (let i = 0; i < jsonarray.length; i++) {
+      if (i != 0 && i % 12 == 0) {
+        await delay(6000);
+      }
+    
+      var WALLETADDRESS = jsonarray[i].WALLETADDRESS;
+      var CRYPTOASSET = jsonarray[i].CRYPTOASSET;
+    
+      try {
+        const response = await axios.get(
+          "https://api.coinmetrics.io/v4/blockchain-v2/" +
+            CRYPTOASSET +
+            "/accounts?accounts=" +
+            WALLETADDRESS +
+            "&pretty=true&api_key=6oZAdNZcdtwAeLWAP4yG&end_time=" +
+            date
+        );
+        // console.log("response: ") ;
+        //console.log("res",response.data.data[0].balance,a)
+        var aa = response.data.data[0].balance;
+       
+        jsonarray[i].BALANCE = aa;
+      } catch (error) {
+        console.log("err", error.response);
+        throw "Error due to incorrect credentails or too manny request";
+      }
     }
-      res.status(200).send("scucess uploaded reserves in db");
+
+    const d = await Exchange_Wallets.insertMany(jsonarray);
+    if (!d) {
+      throw "data not uploaded";
+    }
+    res.status(200).send("scucess uploaded reserves in db");
+   //res.send("scucess")
+      
+    //  // res.status(200).send(jsonarray);
+    //   console.log("end");
     //res.status(200).send(d);
   } catch (error) {
+    // console.log(error)
     res.status(500).send(error);
   }
 };
@@ -191,7 +290,7 @@ exports.total = async (exchange_name, date, asset) => {
 
     var result = {
       Asset: asset,
-      Total: sum,
+      Total: Math.round(sum * 1000000000000) / 1000000000000,
     };
     return result;
   } catch (error) {

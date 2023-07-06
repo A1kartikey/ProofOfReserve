@@ -1,45 +1,8 @@
-var a = ["vin", "kar", "vip"];
 
-var d = [
-  {
-    name: "vin",
-    balance: "1",
-  },
-  {
-    name: "vin",
-    balance: "2",
-  },
-  {
-    name: "kar",
-    balance: "1",
-  },
-  {
-    name: "vip",
-    balance: "1",
-  },
-];
+ var assettype = "sdfsdfsdf"
+var Accountslist = "234234";
+var date = "asdasd"
 
-let ass;
-let total = [];
-for (let j = 0; j < a.length; j++) {
-  //  console.log(a[j])
-  let sum = 0;
-  for (let i = 0; i < d.length; i++) {
-    //console.log(d[i]);
+var a = "https://api.coinmetrics.io/v4/blockchain-v2/"+ assettype +"/accounts?accounts="+ Accountslist +"&pretty=true&api_key=6oZAdNZcdtwAeLWAP4yG&end_time="+ date
 
-    if (d[i].name == a[j]) {
-      //console.log("11",d[i])
-      sum = sum + parseFloat(d[i].balance);
-
-      ass = {
-        name: d[i].name,
-        sums: sum,
-      };
-    }
-  }
-  //console.log("ss",ass)
-  total.push(ass);
-}
-
-console.log("ssss", total);
-//console.log(d[i].name)
+console.log(a.data[0].balance)
