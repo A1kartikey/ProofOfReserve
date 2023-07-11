@@ -5,10 +5,14 @@ var mongoose = require("mongoose"),
   bcrypt = require("bcrypt"),
   User = mongoose.model("User");
 
-exports.register = function (req, res) {
-  console.log("data",req.body)
+exports.register = function  (req, res) {
+  
+console.log(req.body)
   var newUser = new User(req.body);
   newUser.hash_password = bcrypt.hashSync(req.body.password, 10);
+
+ 
+
 
   newUser
     .save()
@@ -17,7 +21,7 @@ exports.register = function (req, res) {
     })
     .catch((err) => {
       res.status(500).send({
-        message: err,
+        message: "email already exists",
       });
     });
 };

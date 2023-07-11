@@ -25,9 +25,11 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // parse requests of content-type - application/json
 app.use(bodyParser.json());
 app.use(cors());
+mongoose.set('autoIndex', true)
 mongoose
   .connect(dbConfig.url, {
     useNewUrlParser: true,
+    autoIndex: true,
   })
   .then(() => {
     console.log("Successfully connected to the database");
@@ -67,24 +69,24 @@ require("./routes/routes.js")(app);
 app.get("/totalassetamount", async (req, res) => {
   try {
     //const a = req.body.asset;
-    console.log("111111");
+    
     var exchange_name = req.query.exchange_name;
 
     var date = req.query.date;
 
     var data = await Assert.getassettype(exchange_name, date);
-    //console.log("data",data)
+   //console.log("data",data)
     if (data == null) {
       throw "dates not found";
     }
 
     let a = data.assetType;
-    //console.log("data", a);
+    
     var final = [];
     for (let i = 0; i < a.length; i++) {
       var asset = a[i];
       var result = await Assert.total(exchange_name, date, asset);
-      //console.log("data", result);
+      
       if (result == null) {
         throw "balance not found";
       }
@@ -178,14 +180,15 @@ app.post("/generateleafhash", async (req, res) => {
       let dat = jsonarr[i].date;
 
       const k = h + dd + dat + salting;
-      console.log("kkkkkkkkkkkkkkkkkkkk", k);
+      
       const g = crypto.createHash("sha256").update(k).digest("hex");
       var result = {
         ID: h,
         hash: g,
-        asofdate: dat,
+        asofdate: date,
       };
       final.push(result);
+      console.log(result)
     }
     const leaf_hash = new Leafhash({
       date: req.body.date,
@@ -214,26 +217,6 @@ app.get("/getleafhash", async (req, res) => {
     date: req.query.date,
   });
 
-
-
-
-  /**Vipin:Commented as the data issue while downloading the CSV and display */
-  /*
-  const datas = data.leafhash;
-  let customResponse = [];
-  customResponse = datas.map((e, idx) => {
-    return {
-      SNO: idx + 1,
-      CUSTOMERID: e.ID,
-      LEAFHASH: e.hash,
-      ASOFDATE: e.asofdate,
-    };
-  });
-
-  const newData = { ...data, leafhash: customResponse };
-
-  res.send(newData);
-  */
   res.send(data);
 });
 
@@ -358,9 +341,7 @@ app.get("/VerifyleafProof", async (req, res) => {
   try {
     const leaf = req.query.leaf;
    
-    console.log("1",req.query.exchange_name)
-    console.log("2",req.query.date)
-    console.log("3",req.query.leaf)
+   
     const data = await merkle_tree.findOne({
       exchange_name: req.query.exchange_name,
       date: req.query.date,

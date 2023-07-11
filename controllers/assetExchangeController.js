@@ -1,6 +1,14 @@
 const csv = require("csvtojson");
 const crypto = require("crypto");
+// var mongoose = require("mongoose");
+
+// var Schema = mongoose.Schema;
+
+// var assettype = new Schema({},{ "strict":false})
+
+// var Assettype = mongoose.model( "Asset", assettype)
 const Assettype = require("../models/asset-type");
+
 const Exchange_liabilities = require("../models/new-exchange-liabilities");
 
 exports.new_exchange = async (req, res) => {
@@ -31,8 +39,8 @@ console.log("0101010101010101")
     var jsonarray = jsonArray.map((v) => ({
       ...v,
       exchange_name: exchange_name,
+      ASOFDATE: date,
       date: date,
-      ASOFDATE: date
     }));
     console.log("1111111111111111111111111111")
 
@@ -40,13 +48,14 @@ console.log("0101010101010101")
 
     const assettype = [...new Set(a)];
 console.log("aaaaa",assettype)
+    let obj = {};
     let newa = [];
     let newd = jsonArray;
-console.log("2222222222222222222222222222222222",)
+console.log("2222222222222222222222222222222222")
     newd.forEach((element, j) => {
       var TotalBalance = 0;
       var Customer_IDToCheck = element.Customer_ID;
-      //var newdate = element.date;
+      var newdate = element.ASOFDATE;
       newd.forEach((element, i) => {
         if (Customer_IDToCheck == element.Customer_ID) {
           TotalBalance += parseFloat(element.Balance);
@@ -56,12 +65,12 @@ console.log("2222222222222222222222222222222222",)
       });
       obj = {
         Customer_ID: Customer_IDToCheck,
-        sum: Math.round(TotalBalance*1000000000000)/1000000000000,
-        date: req.body.date,
+        sum: TotalBalance,
+        date: newdate,
       };
       newa.push(obj);
     });
-console.log("33333333333333333333333333333333333333333333333",newa)
+console.log("33333333333333333333333333333333333333333333333")
     // saving cryptoasset types in new schema
     const asset = new Assettype({
       // date: new Date().valueOf(),
@@ -120,8 +129,7 @@ exports.getexchange_list = async (req, res) => {
 // without pagination
 exports.get_exchange_list = async (req, res) => {
   // Por.findOne(req.body.exchange_name)
-  console.log("exchange_name", req.query.exchange_name);
-  console.log("date", req.query.date);
+
   try {
     if (req.query.exchange_name === undefined || req.query.date === undefined) {
       throw "exchange_name && date fileds are required";
@@ -134,7 +142,7 @@ exports.get_exchange_list = async (req, res) => {
       throw "data not found";
     }
     const final = [];
-    console.log("11111111111111111")
+
     for (let i = 0; i < data.length; i++) {
       let a = {
         Customer_ID: data[i].Customer_ID,
@@ -144,9 +152,8 @@ exports.get_exchange_list = async (req, res) => {
       };
       final.push(a);
     }
-console.log("222222222222222222222222222222222")
+
     res.status(200).send(final);
-    console.log("333333")
   } catch (error) {
     res.status(500).send(error);
   }
@@ -227,7 +234,7 @@ exports.getassettype = async (exchange_name, date) => {
       exchange_name: exchange_name,
       date: date,
     });
-    console.log("Data",data)
+
     if (data == null) {
       throw "data not found";
     }
@@ -258,7 +265,7 @@ exports.total = async (exchange_name, date, asset) => {
 
     var result = {
       Asset: asset,
-      Total:  Math.round(sum*1000000000000)/1000000000000
+      Total: Math.round(sum * 100000000) / 100000000,
     };
     return result;
   } catch (error) {
@@ -272,11 +279,12 @@ exports.get_dates = async (exchange_name) => {
     const data = await Assettype.find({
       exchange_name: exchange_name,
     });
+    
     if (data == null) {
       throw "data not found";
     }
     var final = [];
-    //console.log("data",data)
+
     for (let i = 0; i < data.length; i++) {
       final.push(data[i].date);
     }
@@ -293,11 +301,12 @@ exports.liabilities_getdates = async (req, res) => {
     const data = await Assettype.find({
       exchange_name: req.query.exchange_name,
     });
+    console.log(data)
     if (data == null) {
       throw "data not found";
     }
     var final = [];
-    //console.log("data",data)
+
     for (let i = 0; i < data.length; i++) {
       final.push(data[i].date);
     }

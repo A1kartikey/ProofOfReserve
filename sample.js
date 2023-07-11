@@ -1,8 +1,27 @@
+var a = [
+  {
+    Customer_ID: "",
+    Cryptoasset: "aa",
+    Balance: "",
+    field4: "",
+   }
+ 
+];
+const firstvalues = a[0];
 
- var assettype = "sdfsdfsdf"
-var Accountslist = "234234";
-var date = "asdasd"
+var value = Object.values(aa);
+ console.log("bb", bb);
 
-var a = "https://api.coinmetrics.io/v4/blockchain-v2/"+ assettype +"/accounts?accounts="+ Accountslist +"&pretty=true&api_key=6oZAdNZcdtwAeLWAP4yG&end_time="+ date
+ for(var i=0; i<bb.length; i++) {
+  if(bb[i] === "") {
+    console.log("false ")
+  }
+}
 
-console.log(a.data[0].balance)
+// const cryptoasset = bb.includes("Cryptsosasset")
+
+// const balance = bb.includes('Balance')
+
+// if ( !(coustermid  && cryptoasset  && balance)){
+// console.log("false")
+// }
