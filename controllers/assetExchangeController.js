@@ -14,14 +14,13 @@ const Exchange_liabilities = require("../models/new-exchange-liabilities");
 exports.new_exchange = async (req, res) => {
   // upload csv
   try {
-    console.log("1")
     var exchange_name = req.body.exchange_name;
     var date = req.body.date;
 
     if (exchange_name === undefined || date === undefined) {
       throw "exchange_name && date fileds are required";
     }
-console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+
     // checking if same data is exist throw error
     const data = await Exchange_liabilities.find({
       exchange_name: exchange_name,
@@ -31,31 +30,30 @@ console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
     if (data.length != 0) {
       throw "exchange with date already exist";
     }
-console.log("000000000000000000000000000000000")
+
     var filepath = "uploads/" + req.file.filename;
 
     let jsonArray = await csv().fromFile(filepath);
-console.log("0101010101010101")
+
     var jsonarray = jsonArray.map((v) => ({
       ...v,
       exchange_name: exchange_name,
       ASOFDATE: date,
       date: date,
     }));
-    console.log("1111111111111111111111111111")
 
     var a = jsonArray.map((value) => value.Cryptoasset);
 
     const assettype = [...new Set(a)];
-console.log("aaaaa",assettype)
+
     let obj = {};
     let newa = [];
     let newd = jsonArray;
-console.log("2222222222222222222222222222222222")
+
     newd.forEach((element, j) => {
       var TotalBalance = 0;
       var Customer_IDToCheck = element.Customer_ID;
-      var newdate = element.ASOFDATE;
+      //var newdate = element.ASOFDATE;
       newd.forEach((element, i) => {
         if (Customer_IDToCheck == element.Customer_ID) {
           TotalBalance += parseFloat(element.Balance);
@@ -65,12 +63,12 @@ console.log("2222222222222222222222222222222222")
       });
       obj = {
         Customer_ID: Customer_IDToCheck,
-        sum: TotalBalance,
-        date: newdate,
+        sum: Math.round(TotalBalance * 100000000) / 100000000,
+        date: date,
       };
       newa.push(obj);
     });
-console.log("33333333333333333333333333333333333333333333333")
+
     // saving cryptoasset types in new schema
     const asset = new Assettype({
       // date: new Date().valueOf(),
@@ -81,17 +79,17 @@ console.log("33333333333333333333333333333333333333333333333")
       totalsum: newa,
     });
     // Save por in the database
-  
+    console.log("33", asset);
     const dd = await asset.save();
     if (dd == null) {
       throw new Error("assettype not saved");
     }
-    console.log("44444444444444444444444444444444444")
+
     const d = await Exchange_liabilities.insertMany(jsonarray);
-  console .log("data uploaded ");
-  if (!d){
-    throw "data not uploaded"
-  }
+    console.log("data uploaded ");
+    if (!d) {
+      throw "data not uploaded";
+    }
     res.status(200).send("scucess uploaded libabilities in db");
   } catch (error) {
     res.status(500).send(error);
@@ -279,7 +277,7 @@ exports.get_dates = async (exchange_name) => {
     const data = await Assettype.find({
       exchange_name: exchange_name,
     });
-    
+
     if (data == null) {
       throw "data not found";
     }
@@ -301,7 +299,7 @@ exports.liabilities_getdates = async (req, res) => {
     const data = await Assettype.find({
       exchange_name: req.query.exchange_name,
     });
-    console.log(data)
+
     if (data == null) {
       throw "data not found";
     }

@@ -75,7 +75,7 @@ app.get("/totalassetamount", async (req, res) => {
     var date = req.query.date;
 
     var data = await Assert.getassettype(exchange_name, date);
-   //console.log("data",data)
+   
     if (data == null) {
       throw "dates not found";
     }
@@ -172,15 +172,15 @@ app.post("/generateleafhash", async (req, res) => {
     }
 
     var jsonarr = data.totalsum;
-  
+  //console.log("22",jsonarr)
     var final = [];
     for (let i = 0; i < jsonarr.length; i++) {
       const h = jsonarr[i].Customer_ID;
       const dd = parseFloat(jsonarr[i].sum);
       let dat = jsonarr[i].date;
 
-      const k = h + dd + dat + salting;
-      
+      const k = h + dd + date + salting;
+       console.log("kkk",k)
       const g = crypto.createHash("sha256").update(k).digest("hex");
       var result = {
         ID: h,
@@ -188,7 +188,7 @@ app.post("/generateleafhash", async (req, res) => {
         asofdate: date,
       };
       final.push(result);
-      console.log(result)
+    
     }
     const leaf_hash = new Leafhash({
       date: req.body.date,
@@ -221,14 +221,17 @@ app.get("/getleafhash", async (req, res) => {
 });
 
 app.get("/solvency", async (req, res) => {
+  console.log("0000000000000000000000")
   const exchange_name = req.query.exchange_name;
   //const date = req.query.date
   var start_date = req.query.start_date;
+  console.log("start",start_date)
   var end_date = req.query.end_date;
+  console.log("end",end_date)
   const a = await Solvency.solvency_liabilities(exchange_name);
-
+console.log("1111111",a)
   const data = a.result;
-
+console.log("2222222222222")
   var ed = new Date(end_date).getTime();
   var sd = new Date(start_date).getTime();
 
@@ -236,18 +239,18 @@ app.get("/solvency", async (req, res) => {
     var time = new Date(d.date).getTime();
     return sd <= time && time <= ed;
   });
-
+console.log("3333333333333333")
   const b = await Solvency.solvency_reserves(exchange_name);
-
+console.log("44444444444444444")
   const data2 = b.result;
   var ed = new Date(end_date).getTime();
   var sd = new Date(start_date).getTime();
-
+console.log("5555555555555555")
   solvency_reserves = data2.filter((d) => {
     var time = new Date(d.date).getTime();
     return sd <= time && time <= ed;
   });
-
+console.log("666666666666666666")
   var result = {
     solvency_liabilities,
     solvency_reserves,

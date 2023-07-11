@@ -6,6 +6,7 @@ exports.solvency_liabilities = async (exchange_name) => {
   try {
     //var exchange_name= req.query.exchange_name;
     var dates = await Assert.get_dates(exchange_name);
+    //console.log("dates",dates)
     if (dates == null) {
       throw "dates not found";
     }
@@ -21,6 +22,8 @@ exports.solvency_liabilities = async (exchange_name) => {
       for (let j = 0; j < a.length; j++) {
         var asset = a[j];
         var result = await Assert.total(exchange_name, dates[i], asset);
+        console.log("dates",dates[i])
+       console.log("result",result)
         final.push(result);
       }
 
@@ -30,7 +33,7 @@ exports.solvency_liabilities = async (exchange_name) => {
       };
       finalresult.push(r);
     }
-
+console.log(finalresult)
     const aa = {
       name: "solvency-liabilities",
       result: finalresult,

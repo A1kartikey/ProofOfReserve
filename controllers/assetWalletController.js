@@ -49,7 +49,7 @@ exports.walletcsv = async (req, res) => {
     const aaa = jsonArray[0];
     var value = Object.values(aaa);
 
-    console.log("bb", value);
+    
    
     for(var i=0; i<value.length; i++) {
      if(value[i] === "") {
