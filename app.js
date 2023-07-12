@@ -221,17 +221,17 @@ app.get("/getleafhash", async (req, res) => {
 });
 
 app.get("/solvency", async (req, res) => {
-  console.log("0000000000000000000000")
+
   const exchange_name = req.query.exchange_name;
   //const date = req.query.date
   var start_date = req.query.start_date;
-  console.log("start",start_date)
+
   var end_date = req.query.end_date;
-  console.log("end",end_date)
+ 
   const a = await Solvency.solvency_liabilities(exchange_name);
-console.log("1111111",a)
+
   const data = a.result;
-console.log("2222222222222")
+
   var ed = new Date(end_date).getTime();
   var sd = new Date(start_date).getTime();
 
