@@ -1,11 +1,13 @@
-version: "3"
+version: '3'
 services:
-        
-        mongo:
-              container_name: mongo
-              image: mongo:latest
-              # volumes:
-              #   - ./data:/data/db
-              ports:
-                - '27017:27017'
-                            
+  mongodb:
+    image: mongo:3.5
+    #hostname: ${MONGODB_HOST}
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=por
+      - MONGO_INITDB_ROOT_PASSWORD=super-secret-password
+    restart: on-failure
+    ports:
+      - 27017:27017
+    volumes:
+      - ./mongodb:/data/db

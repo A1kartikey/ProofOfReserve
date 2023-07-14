@@ -34,6 +34,9 @@ exports.new_exchange = async (req, res) => {
     var filepath = "uploads/" + req.file.filename;
 
     let jsonArray = await csv().fromFile(filepath);
+    if (jsonArray.length == 0 ){
+      throw "CSV file was empty"
+     }
 
     var jsonarray = jsonArray.map((v) => ({
       ...v,
@@ -41,7 +44,31 @@ exports.new_exchange = async (req, res) => {
       ASOFDATE: date,
       date: date,
     }));
+    const first = jsonArray[0];
 
+    var bb = Object.keys(first);
+
+    const cryptoasset = bb.includes("Cryptoasset");
+
+    const customer_ID = bb.includes("Customer_ID");
+
+    const balance = bb.includes("Balance");
+
+    if (!(cryptoasset && customer_ID && balance )) {
+      throw "CSV file ROW values are in correct ";
+    }
+    
+    const aaa = jsonArray[0];
+
+    var value = Object.values(aaa);
+
+    
+   
+    for(var i=0; i<value.length; i++) {
+     if(value[i] === "") {
+       throw " csv values are empty"
+     }
+   }
     var a = jsonArray.map((value) => value.Cryptoasset);
 
     const assettype = [...new Set(a)];

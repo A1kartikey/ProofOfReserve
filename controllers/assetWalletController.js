@@ -4,9 +4,6 @@ const axios = require("axios");
 const Exchange_Wallets = require("../models/new-exchange-wallet");
 const Wallet_Assettype = require("../models/new-asset-wallet");
 
-
-
-
 // updated above api
 exports.walletcsv = async (req, res) => {
   // upload csv
@@ -30,9 +27,9 @@ exports.walletcsv = async (req, res) => {
     var filepath = "uploads/" + req.file.filename;
 
     let jsonArray = await csv().fromFile(filepath);
-    if (jsonArray.length == 0 ){
-      throw "CSV file was empty"
-     }
+    if (jsonArray.length == 0) {
+      throw "CSV file was empty";
+    }
 
     const first = jsonArray[0];
 
@@ -42,20 +39,17 @@ exports.walletcsv = async (req, res) => {
 
     const walletaddress = bb.includes("WALLETADDRESS");
 
-
-    if (!(cryptoasset && walletaddress )) {
+    if (!(cryptoasset && walletaddress)) {
       throw "CSV file ROW values are in correct ";
     }
     const aaa = jsonArray[0];
     var value = Object.values(aaa);
 
-    
-   
-    for(var i=0; i<value.length; i++) {
-     if(value[i] === "") {
-       throw " csv values are empty"
-     }
-   }
+    for (var i = 0; i < value.length; i++) {
+      if (value[i] === "") {
+        throw " csv values are empty";
+      }
+    }
 
     const jsonarray = jsonArray.map((v) => ({
       ...v,
@@ -65,23 +59,23 @@ exports.walletcsv = async (req, res) => {
       VERIFIED_OWNERSHIP: "",
       VERIFIED_DATE: "",
     }));
- 
+
     const a = jsonArray.map((value) => value.CRYPTOASSET);
 
     const assettype = [...new Set(a)];
 
+    console.log("72", assettype);
     const asset = new Wallet_Assettype({
       date: req.body.date,
       exchange_name: req.body.exchange_name,
 
       assetType: assettype,
     });
+
     const dd = await asset.save();
     if (dd == null) {
       throw new Error("assettype not saved");
     }
-
-   
 
     const delay = (ms) => new Promise((r) => setTimeout(r, ms));
 
@@ -89,25 +83,28 @@ exports.walletcsv = async (req, res) => {
       if (i != 0 && i % 12 == 0) {
         await delay(6000);
       }
-    
+
       var WALLETADDRESS = jsonarray[i].WALLETADDRESS;
       var CRYPTOASSET = jsonarray[i].CRYPTOASSET;
-    
+      //var ddd = "T23:59:59.000000000Z";
+      //var newdate = date + ddd;
+      //console.log("newdate", newdate);
       try {
         const response = await axios.get(
           "https://api.coinmetrics.io/v4/blockchain-v2/" +
             CRYPTOASSET +
-            "/accounts?accounts=" +
+            "/balance-updates?accounts=" +
             WALLETADDRESS +
-            "&pretty=true&api_key=6oZAdNZcdtwAeLWAP4yG&end_time=" +
-            date
+            "&end_time=" +
+            date+"T23:59:59.000000000Z" +
+            "&api_key=6oZAdNZcdtwAeLWAP4yG&page_size=1"
         );
-    
-        var aa = response.data.data[0].balance;
-       
+
+        //api.coinmetrics.io/v4/blockchain-v2/btc/balance-updates?accounts=1LnoZawVFFQihU8d8ntxLMpYheZUfyeVAK&end_time=2022-12-01&api_key=6oZAdNZcdtwAeLWAP4yG&page_size=1
+       var aa = response.data.data[0].new_balance;
+        console.log("aa",aa)
         jsonarray[i].BALANCE = aa;
       } catch (error) {
- 
         throw "Error due to incorrect credentails or too manny request";
       }
     }
@@ -116,10 +113,22 @@ exports.walletcsv = async (req, res) => {
     if (!d) {
       throw "data not uploaded";
     }
+
+    // var sum = 0;
+    // const ddd = jsonarray
+    // for (let i = 0; i < ddd.length; i++) {
+    //   if (ddd[i].CRYPTOASSET == asset) {
+    //     sum = sum + parseFloat(ddd[i].BALANCE);
+    //   }
+    // }
+
+    // var result = {
+    //   Asset: asset,
+    //   Total: Math.round(sum * 1000000000000) / 1000000000000,
+    // };
+
     res.status(200).send("scucess uploaded reserves in db");
-  
   } catch (error) {
-  
     res.status(500).send(error);
   }
 };
@@ -208,7 +217,7 @@ exports.getassettype = async (exchange_name, date) => {
     if (data == null) {
       throw "data not found";
     }
-  
+
     return data;
   } catch (error) {
     return error;
@@ -241,6 +250,7 @@ exports.total = async (exchange_name, date, asset) => {
       exchange_name: exchange_name,
       date: date,
     });
+    console.log("data");
     if (data == null) {
       throw "data not found";
     }

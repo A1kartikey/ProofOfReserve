@@ -1,27 +1,13 @@
-var a = [
-  {
-    Customer_ID: "",
-    Cryptoasset: "aa",
-    Balance: "",
-    field4: "",
-   }
- 
-];
-const firstvalues = a[0];
+var CRYPTOASSET = "vin"
+var WALLETADDRESS = "kar"
+var date = "2023-11-11"
 
-var value = Object.values(aa);
- console.log("bb", bb);
+var a = "https://api.coinmetrics.io/v4/blockchain-v2/" +
+CRYPTOASSET +
+"/balance-updates?accounts=" +
+WALLETADDRESS +
+"&end_time=" +
+date+"T23:59:59.000000000Z" +
+"&api_key=6oZAdNZcdtwAeLWAP4yG&page_size=1"
 
- for(var i=0; i<bb.length; i++) {
-  if(bb[i] === "") {
-    console.log("false ")
-  }
-}
-
-// const cryptoasset = bb.includes("Cryptsosasset")
-
-// const balance = bb.includes('Balance')
-
-// if ( !(coustermid  && cryptoasset  && balance)){
-// console.log("false")
-// }
+console.log(a)
