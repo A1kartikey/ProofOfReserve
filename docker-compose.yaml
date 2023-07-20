@@ -4,10 +4,9 @@ services:
     image: mongo:3.5
     #hostname: ${MONGODB_HOST}
     environment:
-      - MONGO_INITDB_ROOT_USERNAME=por
-      - MONGO_INITDB_ROOT_PASSWORD=super-secret-password
+      - MONGO_INITDB_ROOT_USERNAME=por-test
+      - MONGO_INITDB_ROOT_PASSWORD=portmvp
     restart: on-failure
     ports:
       - 27017:27017
-    volumes:
-      - ./mongodb:/data/db
+ 

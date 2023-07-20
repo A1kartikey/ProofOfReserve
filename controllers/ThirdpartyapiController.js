@@ -35,7 +35,7 @@ exports.create = async (req, res) => {
   const Accountslist = req.body.accountlist;
   const assettype = req.body.assettype;
   const Date = req.body.date;
-
+console.log("date",Date)
   try {
     const response = await axios.get(
       "https://api.coinmetrics.io/v4/blockchain-v2/" +
