@@ -1,7 +1,7 @@
-'use strict';
+"use strict";
 
-var mongoose = require('mongoose'),
-  bcrypt = require('bcrypt'),
+var mongoose = require("mongoose"),
+  bcrypt = require("bcrypt"),
   Schema = mongoose.Schema;
 
 /**
@@ -11,32 +11,32 @@ var UserSchema = new Schema({
   fullName: {
     type: String,
     trim: true,
-    required: true
+    required: true,
   },
   email: {
     type: String,
     unique: true,
     lowercase: true,
     trim: true,
-    required: true
+    required: true,
   },
   hash_password: {
-    type: String
-  },  
+    type: String,
+  },
   role: {
     type: String,
     trim: true,
-    required: true
+    required: true,
   },
   Exchange: [{ type: String }],
   created: {
     type: Date,
-    default: Date.now
-  }
+    default: Date.now,
+  },
 });
 
-UserSchema.methods.comparePassword = function(password) {
+UserSchema.methods.comparePassword = function (password) {
   return bcrypt.compareSync(password, this.hash_password);
 };
 
-mongoose.model('User', UserSchema);
+mongoose.model("User", UserSchema);

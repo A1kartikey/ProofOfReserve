@@ -1,0 +1,7 @@
+Customer_ID,Cryptoasset,Balance,ASOFDATE
+0xA1,btc,1000.1,6/14/2023
+0XA2,eth,2000,6/14/2023
+0xA3,matic_eth,1.012294,6/14/2023
+0xA1,btc,1000.2,6/14/2023
+0XA2,eth,2000.2,6/14/2023
+0xA3,matic_eth,1.012294,6/14/2023
