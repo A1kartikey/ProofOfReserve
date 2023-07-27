@@ -8,9 +8,7 @@ module.exports = (app) => {
   const thirdpartapi = require("../controllers/ThirdpartyapiController.js");
 
   const wallet = require("../controllers/assetWalletController.js");
-  // todoList Routes
-  // app.route('/tasks')
-  //     .post(userHandlers.loginRequired, userHandlers.profile);
+  
   app.route("/auth/register").post(userHandlers.register);
   app.route("/auth/update").post(userHandlers.update);
 
@@ -50,6 +48,5 @@ module.exports = (app) => {
   //app.post("/totalasstamountall",assetcsv.totalbalanceall)
   // app.get('/assetbyid/:id',assetcsv.readone)
   app.post("/thirdpartyapi", thirdpartapi.create);
-  //app.post("/newthirdpartyapi",thirdpartapi.coinmetrics)
-  // Retrieve a single Note with noteId
+  
 };
