@@ -125,7 +125,7 @@ exports.new_exchange = async (req, res) => {
 
 exports.getexchange_list = async (req, res) => {
   // Por.findOne(req.body.exchange_name)
-
+console.log("hello")
   try {
     const limitValue = req.query.limit || 10;
     const skipValue = req.query.skip || 0;
@@ -133,6 +133,12 @@ exports.getexchange_list = async (req, res) => {
     if (req.query.exchange_name === undefined || req.query.date === undefined) {
       throw "exchange_name && date fileds are required";
     }
+    const data2 = await Exchange_liabilities.find({
+      exchange_name: req.query.exchange_name,
+      date: req.query.date,
+    });
+var totallenght = data2.length;
+//console.log("111",data2.length)
     const data = await Exchange_liabilities.find({
       exchange_name: req.query.exchange_name,
       date: req.query.date,
@@ -144,7 +150,12 @@ exports.getexchange_list = async (req, res) => {
       throw "data not found";
     }
 
-    res.status(200).send(data);
+var ress = {
+  totallenght: totallenght,
+  result: data
+}
+
+    res.status(200).json(ress);
   } catch (error) {
     //console.log(error);
     res.status(500).send(error);
