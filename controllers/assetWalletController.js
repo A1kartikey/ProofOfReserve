@@ -64,18 +64,8 @@ exports.walletcsv = async (req, res) => {
 
     const assettype = [...new Set(a)];
 
-    console.log("72", assettype);
-    const asset = new Wallet_Assettype({
-      date: req.body.date,
-      exchange_name: req.body.exchange_name,
-
-      assetType: assettype,
-    });
-
-    const dd = await asset.save();
-    if (dd == null) {
-      throw new Error("assettype not saved");
-    }
+    //console.log("72", assettype);
+    
 
     const delay = (ms) => new Promise((r) => setTimeout(r, ms));
 
@@ -112,6 +102,17 @@ exports.walletcsv = async (req, res) => {
     const d = await Exchange_Wallets.insertMany(jsonarray);
     if (!d) {
       throw "data not uploaded";
+    }
+    const asset = new Wallet_Assettype({
+      date: req.body.date,
+      exchange_name: req.body.exchange_name,
+
+      assetType: assettype,
+    });
+
+    const dd = await asset.save();
+    if (dd == null) {
+      throw new Error("assettype not saved");
     }
 
     // var sum = 0;
