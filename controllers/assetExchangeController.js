@@ -10,7 +10,7 @@ const crypto = require("crypto");
 const Assettype = require("../models/asset-type");
 
 const Exchange_liabilities = require("../models/new-exchange-liabilities");
-
+const Total_liabilities = require("../models/liablities-total")
 exports.new_exchange = async (req, res) => {
   // upload csv
   try {
@@ -34,9 +34,9 @@ exports.new_exchange = async (req, res) => {
     var filepath = "uploads/" + req.file.filename;
 
     let jsonArray = await csv().fromFile(filepath);
-    if (jsonArray.length == 0 ){
+    if (jsonArray.length == 0) {
       throw "CSV file was empty"
-     }
+    }
 
     var jsonarray = jsonArray.map((v) => ({
       ...v,
@@ -54,47 +54,77 @@ exports.new_exchange = async (req, res) => {
 
     const balance = bb.includes("Balance");
 
-    if (!(cryptoasset && customer_ID && balance )) {
+    if (!(cryptoasset && customer_ID && balance)) {
       throw "CSV file ROW values are in correct ";
     }
-    
+
     const aaa = jsonArray[0];
 
     var value = Object.values(aaa);
 
-    
-   
-    for(var i=0; i<value.length; i++) {
-     if(value[i] === "") {
-       throw " csv values are empty"
-     }
-   }
+    for (var i = 0; i < value.length; i++) {
+      if (value[i] === "") {
+        throw " csv values are empty"
+      }
+    }
     var a = jsonArray.map((value) => value.Cryptoasset);
 
     const assettype = [...new Set(a)];
 
-    let obj = {};
-    let newa = [];
+    // let obj = {};
+    // let newa = [];
+    // let newd = jsonArray;
+
+    // newd.forEach((element, j) => {
+    //   var TotalBalance = 0;
+    //   var Customer_IDToCheck = element.Customer_ID;
+    //   //var newdate = element.ASOFDATE;
+    //   newd.forEach((element, i) => {
+    //     if (Customer_IDToCheck == element.Customer_ID) {
+    //       TotalBalance += parseFloat(element.Balance);
+
+    //       delete newd[i];
+    //     }
+    //   });
+    //   obj = {
+    //     Customer_ID: Customer_IDToCheck,
+    //     sum: Math.round(TotalBalance * 100000000) / 100000000,
+    //     date: date,
+    //   };
+    //   newa.push(obj);
+    // });
+
+    const output = {};
+    
     let newd = jsonArray;
+    
+    console.log("108,108")
+    
+    for (const { Customer_ID, Balance } of newd) {
+    
 
-    newd.forEach((element, j) => {
-      var TotalBalance = 0;
-      var Customer_IDToCheck = element.Customer_ID;
-      //var newdate = element.ASOFDATE;
-      newd.forEach((element, i) => {
-        if (Customer_IDToCheck == element.Customer_ID) {
-          TotalBalance += parseFloat(element.Balance);
+      output[Customer_ID] ??= 0;
+    
+      output[Customer_ID] += parseFloat(Balance);
 
-          delete newd[i];
-        }
-      });
-      obj = {
-        Customer_ID: Customer_IDToCheck,
-        sum: Math.round(TotalBalance * 100000000) / 100000000,
-        date: date,
-      };
-      newa.push(obj);
-    });
+    }
+    
+    console.log("117,117")
+    
+    //console.log(output)
+    
+    const newa = []
+    
+    Object.entries(output).map((val) =>
+      newa.push({
+                Customer_ID: val[0],
+                sum: Math.round(val[1] * 100000000) / 100000000,
+                date: req.body.date,
+                exchange_name: req.body.exchange_name,
+      })
+    );
+    
+     console.log("127,127")
 
     // saving cryptoasset types in new schema
     const asset = new Assettype({
@@ -103,15 +133,22 @@ exports.new_exchange = async (req, res) => {
       exchange_name: req.body.exchange_name,
 
       assetType: assettype,
-      totalsum: newa,
     });
+   
     // Save por in the database
-    console.log("33", asset);
+    //console.log("33", asset);
     const dd = await asset.save();
     if (dd == null) {
       throw new Error("assettype not saved");
     }
+ console.log("137,137");
 
+    const ddd = await Total_liabilities.insertMany(newa);
+   if (ddd == null) {
+     throw new Error("totoal sum not saved");
+   }
+
+ console.log("151,151");
     const d = await Exchange_liabilities.insertMany(jsonarray);
     console.log("data uploaded ");
     if (!d) {
@@ -125,7 +162,7 @@ exports.new_exchange = async (req, res) => {
 
 exports.getexchange_list = async (req, res) => {
   // Por.findOne(req.body.exchange_name)
-
+  console.log("hello")
   try {
     const limitValue = req.query.limit || 10;
     const skipValue = req.query.skip || 0;
@@ -133,6 +170,12 @@ exports.getexchange_list = async (req, res) => {
     if (req.query.exchange_name === undefined || req.query.date === undefined) {
       throw "exchange_name && date fileds are required";
     }
+    const data2 = await Exchange_liabilities.find({
+      exchange_name: req.query.exchange_name,
+      date: req.query.date,
+    });
+    var totallenght = data2.length;
+    //console.log("111",data2.length)
     const data = await Exchange_liabilities.find({
       exchange_name: req.query.exchange_name,
       date: req.query.date,
@@ -144,7 +187,12 @@ exports.getexchange_list = async (req, res) => {
       throw "data not found";
     }
 
-    res.status(200).send(data);
+    var ress = {
+      totallenght: totallenght,
+      result: data
+    }
+
+    res.status(200).json(ress);
   } catch (error) {
     //console.log(error);
     res.status(500).send(error);
@@ -269,6 +317,27 @@ exports.getassettype = async (exchange_name, date) => {
     return error;
   }
 };
+
+
+exports.gettotalsum = async (req, res) => {
+  // Por.findOne(req.body.exchange_name)
+  try {
+    const data = await Total_liabilities.find({
+      exchange_name: req.query.exchange_name,
+      date: req.query.date,
+    });
+console.log("data gattered")
+    if (data == null) {
+      throw "data not found";
+    }
+
+    res.status(200).send(data);
+  } catch (error) {
+    return error;
+  }
+};
+
+
 
 exports.total = async (exchange_name, date, asset) => {
   // Por.findOne(req.body.exchange_name)

@@ -1,0 +1,445 @@
+swagger: "2.0"
+info:
+  title: POR API
+  description: This is POR backend API Documentation
+  version: 1.0
+  servers:
+    -url: http://localhost:5000
+    description: THis is my local Server
+
+schemes: [http]
+
+
+#Return Users From get request
+paths:
+
+#Post json/body & Body required--- register user api
+  /auth/register:
+    post:
+      summary: register a new user
+      produces:
+        - application/json
+      consumes:
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          schema:
+            type: object
+            required:
+              - fullName
+              - email
+              - role
+              - password
+              - accountStatus
+            properties:
+              fullName:
+                type: string
+              email:
+                type: string
+              role:
+                type: string
+              password:
+                type: string
+              accountStatus:
+                type: string                                                
+      responses:
+        '200':
+          description: OK
+#singin api
+  /auth/sign_in:
+    post:
+      summary: signin a user
+      produces:
+        - application/json
+      consumes:
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          schema:
+            type: object
+            required:
+              - email
+              - password
+            properties:
+              email:
+                type: string
+              password:
+                type: string                                              
+      responses:
+        '200':
+          description: OK     
+
+
+  /auth/getuserlist:
+    get:
+      summary: This return a list of users which account status as pending
+      description: Returns a list of users which account status as pending
+      responses:
+        200:    # status code
+          description: Successul Response
+          schema: 
+            type: object               
+
+# update accountstatus for a user
+  /auth/update_accountStatus:
+    post:
+      summary: update accountstatus for a user
+      produces:
+        - application/json
+      consumes:
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          schema:
+            type: object
+            required:
+              - email
+              - accountStatus
+            properties:
+              email:
+                type: string
+              accountStatus:
+                type: string                                              
+      responses:
+        '200':
+          description: OK     
+
+# get list of user accountsstatus apporved            
+  /auth/getapproveduserlist:
+    get:
+      summary: This return a list of users which account status as approved
+      description: Returns a list of users which account status as approved
+      responses:
+        200:    # status code
+          description: Successul Response
+          schema: 
+            type: object
+
+# delete user /auth/delete
+
+  /auth/delete:
+    post:
+      summary: delete user by email id 
+      produces:
+        - application/json
+      consumes:
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          schema:
+            type: object
+            required:
+              - email
+            properties:
+              email:
+                type: string                                              
+      responses:
+        '200':
+          description: OK     
+
+# update user enddate, assigndate & exchnage list
+
+  /auth/update_admin:
+    post:
+      summary: delete user by email id 
+      produces:
+        - application/json
+      consumes:
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          schema:
+            type: object
+            required:
+              - email
+              - End_Date
+              - Assign_Date
+              - Exchange                                          
+            properties:
+              email:
+                type: string  
+              End_Date:
+                type: string  
+              Assign_Date:
+                type: string  
+              Exchange:
+                type: array                                                                                              
+      responses:
+        '200':
+          description: OK     
+
+  /new-upload:
+    post:
+
+      summary: Upload csv file for libalities screen
+      consumes:
+        - multipart/form-data
+      parameters:
+        - in: formData
+          name: file
+          type: file
+          required: true
+          description: The file to upload
+        - in: body
+          name: body
+          schema:
+            type: object
+            required:
+              - exchange_name       
+              - date                              
+            properties:
+              exchange_name:
+                type: string    
+              date:
+                type: string                               
+
+#Get Query for list of dates by exchange 
+  /liabilities_getdates:
+    get:
+      summary: Returns dates by exchange.
+      description: Returns dates by exchange.
+      parameters:
+        - in: query
+          name: exchange_name
+          type: string
+          required: true
+
+      responses: 
+        '200':
+          description: OK
+          schema:
+            type: object
+
+#Get Query for libalities screen data
+  /get_exchange_list:
+    get:
+      summary: libalities screen data
+      description: libalities screen data
+      parameters:
+        - in: query
+          name: exchange_name
+          type: string
+          required: true
+        - in: query
+          name: date
+          type: string
+          required: true          
+
+      responses: 
+        '200':
+          description: OK
+          schema:
+            type: object              
+
+#Get Query to get total amount of assets in liablities screen
+  /totalassetamount:
+    get:
+      summary: total amount of assets in liablities screen
+      description: total amount of assets in liablities screen
+      parameters:
+        - in: query
+          name: exchange_name
+          type: string
+          required: true
+        - in: query
+          name: date
+          type: string
+          required: true          
+
+      responses: 
+        '200':
+          description: OK
+          schema:
+            type: object 
+
+
+#Get Query for list of dates by exchange 
+  /reserves-getdates:
+    get:
+      summary: Returns dates by exchange.
+      description: Returns dates by exchange.
+      parameters:
+        - in: query
+          name: exchange_name
+          type: string
+          required: true
+
+      responses: 
+        '200':
+          description: OK
+          schema:
+            type: object
+
+#Get Query for list of dates by exchange for reseves screen
+  /get_exchange_wallet_find:
+    get:
+      summary: Returns dates by exchange for reserves screen.
+      description: Returns dates by exchange.
+      parameters:
+        - in: query
+          name: exchange_name
+          type: string
+          required: true
+        - in: query
+          name: date
+          type: string
+          required: true          
+
+      responses: 
+        '200':
+          description: OK
+          schema:
+            type: object              
+
+#Get Query to get total amount of assets in reserves screen
+  /totalwalletamount:
+    get:
+      summary: total amount of assets in reserves screen
+      description: total amount of assets in reserves screen
+      parameters:
+        - in: query
+          name: exchange_name
+          type: string
+          required: true
+        - in: query
+          name: date
+          type: string
+          required: true          
+
+      responses: 
+        '200':
+          description: OK
+          schema:
+            type: object       
+
+#Get Query for solvency screen
+  /solvency:
+    get:
+      summary: query for solvency
+      description: query for solvency
+      parameters:
+        - in: query
+          name: exchange_name
+          type: string
+          required: true
+        - in: query
+          name: start_date
+          type: string
+          required: true    
+        - in: query
+          name: end_date
+          type: string
+          required: true                 
+
+      responses: 
+        '200':
+          description: OK
+          schema:
+            type: object      
+
+
+#generateleafhash api
+  /generateleafhash:
+    post:
+      summary: generateleafhash
+      produces:
+        - application/json
+      consumes:
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          schema:
+            type: object
+            required:
+              - exchange_name
+              - date
+              - salting
+            properties:
+              exchange_name:
+                type: string
+              date:
+                type: string 
+              salting:
+                type: string                                                              
+      responses:
+        '200':
+          description: OK     
+
+#Get Query for getleafhash screen
+  /getleafhash:
+    get:
+      summary: query for leafhash
+      description: query for leafhash
+      parameters:
+        - in: query
+          name: exchange_name
+          type: string
+          required: true
+        - in: query
+          name: date
+          type: string
+          required: true    
+                
+
+      responses: 
+        '200':
+          description: OK
+          schema:
+            type: object  
+
+
+#generate_Merkletree api
+  /generate_Merkletree:
+    post:
+      summary: generate_Merkletree
+      produces:
+        - application/json
+      consumes:
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          schema:
+            type: object
+            required:
+              - exchange_name
+              - date
+            properties:
+              exchange_name:
+                type: string
+              date:
+                type: string                                              
+      responses:
+        '200':
+          description: OK     
+
+
+#Get Query for get_Merkletree screen
+  /get_Merkletree:
+    get:
+      summary: query for get_Merkletree
+      description: query for get_Merkletree
+      parameters:
+        - in: query
+          name: exchange_name
+          type: string
+          required: true
+        - in: query
+          name: date
+          type: string
+          required: true    
+                
+
+      responses: 
+        '200':
+          description: OK
+          schema:
+            type: object  
+            
+

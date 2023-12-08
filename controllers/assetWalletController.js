@@ -64,18 +64,8 @@ exports.walletcsv = async (req, res) => {
 
     const assettype = [...new Set(a)];
 
-    console.log("72", assettype);
-    const asset = new Wallet_Assettype({
-      date: req.body.date,
-      exchange_name: req.body.exchange_name,
-
-      assetType: assettype,
-    });
-
-    const dd = await asset.save();
-    if (dd == null) {
-      throw new Error("assettype not saved");
-    }
+    //console.log("72", assettype);
+  
 
     const delay = (ms) => new Promise((r) => setTimeout(r, ms));
 
@@ -105,28 +95,29 @@ exports.walletcsv = async (req, res) => {
         console.log("aa",aa)
         jsonarray[i].BALANCE = aa;
       } catch (error) {
-        throw "Error due to incorrect credentails or too manny request";
+        console.log("error")
+        throw "Error due to incorrect credentails or too many request";
+      
       }
-    }
 
+    }
+  //console.log(jsonarray)
     const d = await Exchange_Wallets.insertMany(jsonarray);
     if (!d) {
       throw "data not uploaded";
     }
+    const asset = new Wallet_Assettype({
+      date: req.body.date,
+      exchange_name: req.body.exchange_name,
 
-    // var sum = 0;
-    // const ddd = jsonarray
-    // for (let i = 0; i < ddd.length; i++) {
-    //   if (ddd[i].CRYPTOASSET == asset) {
-    //     sum = sum + parseFloat(ddd[i].BALANCE);
-    //   }
-    // }
+      assetType: assettype,
+    });
 
-    // var result = {
-    //   Asset: asset,
-    //   Total: Math.round(sum * 1000000000000) / 1000000000000,
-    // };
-
+    const dd = await asset.save();
+    if (dd == null) {
+      throw new Error("assettype not saved");
+    }
+    
     res.status(200).send("scucess uploaded reserves in db");
   } catch (error) {
     res.status(500).send(error);

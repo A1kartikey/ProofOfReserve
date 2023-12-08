@@ -13,7 +13,23 @@ module.exports = (app) => {
   //     .post(userHandlers.loginRequired, userHandlers.profile);
   app.route("/auth/register").post(userHandlers.register);
   app.route("/auth/update").post(userHandlers.update);
+  app
+    .route("/auth/update_accountStatus")
+    .post(userHandlers.update_accountStatus);
+//app.route("/auth/update_requestStatus").post(userHandlers.update_requestStatus);
+  
 
+   app.get("/gettotalsum", assetcsv.gettotalsum);
+
+  app.route("/auth/delete").post(userHandlers.delete);
+
+  app.route("/auth/update_admin").post(userHandlers.update_admin);
+  
+  
+
+  app.route("/auth/getuserlist").get(userHandlers.getuserlist);
+app.route("/auth/getapproveduserlist").get(userHandlers.getapproveduserlist);
+  
   app.route("/auth/sign_in").post(userHandlers.sign_in);
 
   app.post("/new-upload", upload.single("file"), assetcsv.new_exchange);

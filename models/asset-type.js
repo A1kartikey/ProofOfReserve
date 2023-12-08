@@ -5,11 +5,7 @@ const Assettype = mongoose.Schema(
     date: String,
     exchange_name: String,
     // exchange_id: String,
-    assetType: [{ type: String }],
-    totalsum: {
-      type: mongoose.SchemaTypes.Mixed,
-      required: true,
-    },
+    assetType: [{ type: String }]
   },
   {
     timestamps: true,

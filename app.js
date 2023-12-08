@@ -1,12 +1,19 @@
 const express = require("express");
+const FileSystem = require("fs");
 const { MerkleTree } = require("merkletreejs");
+const swaggerUI = require("swagger-ui-express")
+const YAML = require("yamljs")
+const swaggerJsDocs = YAML.load("./api.yaml")
 const crypto = require("crypto");
 const bodyParser = require("body-parser");
+const { MongoClient } = require("mongodb");
 var cors = require("cors");
 const dbConfig = require("./config/database.config.js");
 const mongoose = require("mongoose");
 var User = require("./models/userModel.js");
 const Leafhash = require("./models/leaf_hash-model.js");
+
+const Total_liabilities = require('./models/liablities-total.js')
 const merkle_tree = require("./models/merkletree-model.js");
 const Assert = require("./controllers/assetExchangeController.js");
 const Solvency = require("./controllers/solvency.js");
@@ -21,7 +28,7 @@ const app = express();
 
 // parse requests of content-type - application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: true }));
-
+app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(swaggerJsDocs))
 // parse requests of content-type - application/json
 app.use(bodyParser.json());
 app.use(cors());
@@ -156,22 +163,26 @@ app.post("/generateleafhash", async (req, res) => {
     ) {
       throw "exchange_name && date fileds are required";
     }
-
+console.log("164,164")
     const dataleaf = await Leafhash.findOne({
       exchange_name: exchange_name,
       date: date,
     });
-
+console.log("169,169")
     if (dataleaf != null) {
       throw "leafhash with date already exist";
     }
-
-    var data = await Assert.getassettype(exchange_name, date);
-    if (data == null) {
-      throw "data not found";
-    }
-
-    var jsonarr = data.totalsum;
+console.log("173,173")
+   const totoaldata = await Total_liabilities.find({
+     exchange_name: exchange_name,
+     date: date,
+   });
+       if (data = null) {
+         throw "total sum not exist";
+       }
+console.log("data got")
+    var jsonarr = totoaldata;
+    console.log(jsonarr[0])
     //console.log("22",jsonarr)
     var final = [];
     for (let i = 0; i < jsonarr.length; i++) {
@@ -180,26 +191,32 @@ app.post("/generateleafhash", async (req, res) => {
       let dat = jsonarr[i].date;
 
       const k = h + dd + date + salting;
-      console.log("kkk", k);
+      // console.log("kkk", k);
       const g = crypto.createHash("sha256").update(k).digest("hex");
       var result = {
         ID: h,
         hash: g,
         asofdate: date,
+        date: req.body.date,
+        exchange_name: req.body.exchange_name,
+        Salting: salting,
       };
       final.push(result);
     }
-    const leaf_hash = new Leafhash({
-      date: req.body.date,
-      exchange_name: req.body.exchange_name,
-      Salting: salting,
-      //dynamic number: exchangename+fourdigitid
-      leafhash: final,
-    });
+    console.log("197,197",final[0])
+    // const leaf_hash = new Leafhash({
+      
+    //   Salting: salting,
+    //   //dynamic number: exchangename+fourdigitid
+    //   leafhash: final,
+    // });
     // Save por in the database
 
-    const dd = await leaf_hash.save();
-
+    // const dd = await leaf_hash.save();
+    const dd = await Leafhash.insertMany(final);
+    if (dd == null) {
+      throw new Error("leaf hashes not saved");
+    }
     let ressult = {
       message: "exchange coustmers leaf generated",
     };
@@ -210,12 +227,12 @@ app.post("/generateleafhash", async (req, res) => {
 });
 
 app.get("/getleafhash", async (req, res) => {
-  const data = await Leafhash.findOne({
+  const data = await Leafhash.find({
     exchange_name: req.query.exchange_name,
     date: req.query.date,
   });
-
-  res.send(data);
+console.log(data[0],data[1])
+  res.status(200).send(data);
 });
 
 app.get("/solvency", async (req, res) => {
@@ -255,27 +272,30 @@ app.post("/generate_Merkletree", async (req, res) => {
     var date = req.body.date;
     var tree = 0;
 
-    const dataMK = await merkle_tree.findOne({
-      exchange_name: exchange_name,
-      date: date,
-    });
+    // const dataMK = await merkle_tree.findOne({
+    //   exchange_name: exchange_name,
+    //   date: date,
+    // });
 
-    if (dataMK != null) {
-      throw "merkletree with date already exist";
-    }
-    const data = await Leafhash.findOne({
+    // if (dataMK != null) {
+    //   throw "merkletree with date already exist";
+    // }
+    console.log("1111")
+    const data = await Leafhash.find({
       exchange_name: exchange_name,
       date: date,
     });
+   // console.log(data)
     if (data == null) {
       throw "coustmer_id not found";
     }
 
-    const leafs = data.leafhash;
-
+    const leafs = data;
+console.log("290,290",data[0])
     let hashArray = [];
 
     leafs.forEach((element) => {
+    
       hashArray.push(element.hash);
     });
 
@@ -298,21 +318,35 @@ app.post("/generate_Merkletree", async (req, res) => {
     var root = tree.getRoot().toString("hex");
 
     //var roothash = await new MerkleTree(level)
-
+console.log("316,316")
     // Save merkle_tree in the database
-    const mt = new merkle_tree({
-      date: req.body.date,
-      exchange_name: req.body.exchange_name,
+   // console.log(Tree);
+   var filename = exchange_name + date + "-d.json"
 
-      merkletree: Tree,
-      Root_hash: root,
-    });
-    // Save por in the database
-
-    const dd = await mt.save();
+     FileSystem.writeFile(filename, JSON.stringify(Tree), (error) => {
+       if (error) throw error;
+     });
+ console.log("317,317")
+// const client = new MongoClient(
+//   "mongodb://por-test:portmvp@localhost:27017/new-por?authSource=admin"
+// );
+//      console.log("clinet-----------")
+var db = mongoose.connections[0].db;
+bucket = new mongoose.mongo.GridFSBucket(db, {
+  bucketName: "MT-bucket",
+});
+console.log(bucket);
+    
+var result = fs.createReadStream(filename).pipe(
+  bucket.openUploadStream(filename, {
+    ChunkSizeBytes : 64512,
+    metadata: { field: "exchange", value: exchange },
+  })
+);
 
     let ressult = {
       message: "exchange coustmers merkletree generated",
+      result: result
     };
     res.status(200).send(ressult);
   } catch (error) {

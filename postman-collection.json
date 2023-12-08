@@ -20,7 +20,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://20.96.181.1:3000/auth/register",
+					"raw": "http://4.204.209.215:3000/auth/register",
 					"protocol": "http",
 					"host": [
 						"20",
@@ -52,7 +52,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://20.96.181.1:3000/auth/sign_in",
+					"raw": "http://4.204.209.215:3000/auth/sign_in",
 					"protocol": "http",
 					"host": [
 						"20",
@@ -84,7 +84,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://20.96.181.1:3000/auth/update",
+					"raw": "http://4.204.209.215:3000/auth/update",
 					"protocol": "http",
 					"host": [
 						"20",
@@ -132,7 +132,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://20.96.181.1:3000/new-upload",
+					"raw": "http://4.204.209.215:3000/new-upload",
 					"protocol": "http",
 					"host": [
 						"20",
@@ -183,7 +183,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://20.96.181.1:3000/getexchange_list?exchange_name=wazirx&date=November-2022&limit=4&skip=0",
+					"raw": "http://4.204.209.215:3000/getexchange_list?exchange_name=wazirx&date=November-2022&limit=4&skip=0",
 					"protocol": "http",
 					"host": [
 						"20",
@@ -235,7 +235,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://20.96.181.1:3000/get_exchange_list?exchange_name=coinmetrics&date=2023-06-25",
+					"raw": "http://4.204.209.215:3000/get_exchange_list?exchange_name=coinmetrics&date=2023-06-25",
 					"protocol": "http",
 					"host": [
 						"20",
@@ -267,7 +267,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://20.96.181.1:3000/liabilities_getdates?exchange_name=coinmetrics",
+					"raw": "http://4.204.209.215:3000/liabilities_getdates?exchange_name=coinmetrics",
 					"protocol": "http",
 					"host": [
 						"20",
@@ -295,7 +295,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://20.96.181.1:3000/totalassetamount?date=ocetss-2024&exchange_name=coinmetrics",
+					"raw": "http://4.204.209.215:3000/totalassetamount?date=ocetss-2024&exchange_name=coinmetrics",
 					"protocol": "http",
 					"host": [
 						"20",
@@ -336,7 +336,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://20.96.181.1:3000/generateleafhash",
+					"raw": "http://4.204.209.215:3000/generateleafhash",
 					"protocol": "http",
 					"host": [
 						"20",
@@ -387,7 +387,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://20.96.181.1:3000/getleafhash?date=ocetss-2024&exchange_name=coinmetrics",
+					"raw": "http://4.204.209.215:3000/getleafhash?date=ocetss-2024&exchange_name=coinmetrics",
 					"protocol": "http",
 					"host": [
 						"20",
@@ -428,7 +428,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://20.96.181.1:3000/generate_Merkletree",
+					"raw": "http://4.204.209.215:3000/generate_Merkletree",
 					"protocol": "http",
 					"host": [
 						"20",
@@ -479,7 +479,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://20.96.181.1:3000/get_Merkletree?date=2023-06-33&exchange_name=binance",
+					"raw": "http://4.204.209.215:3000/get_Merkletree?date=2023-06-33&exchange_name=binance",
 					"protocol": "http",
 					"host": [
 						"20",
@@ -523,7 +523,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://20.96.181.1:3000/VerifyleafProof?date=2023-06-33&exchange_name=binance&leaf=9e557c12d4d9f80a35fb571b89d2c38b5d57b7d53219737fc3946bfa6265d9f10",
+					"raw": "http://4.204.209.215:3000/VerifyleafProof?date=2023-06-33&exchange_name=binance&leaf=9e557c12d4d9f80a35fb571b89d2c38b5d57b7d53219737fc3946bfa6265d9f10",
 					"protocol": "http",
 					"host": [
 						"20",
@@ -579,7 +579,7 @@
 					]
 				},
 				"url": {
-					"raw": "http://20.96.181.1:3000/walletcsv",
+					"raw": "http://4.204.209.215:3000/walletcsv",
 					"protocol": "http",
 					"host": [
 						"20",
@@ -613,7 +613,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://20.96.181.1:3000/get_exchange_wallet_find?exchange_name=wazirx&date=24/06/2023",
+					"raw": "http://4.204.209.215:3000/get_exchange_wallet_find?exchange_name=wazirx&date=24/06/2023",
 					"protocol": "http",
 					"host": [
 						"20",
@@ -657,7 +657,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://20.96.181.1:3000/get_exchange_wallets?exchange_name=coinmetrics&date=march-2023&limit=20&skip=0",
+					"raw": "http://4.204.209.215:3000/get_exchange_wallets?exchange_name=coinmetrics&date=march-2023&limit=20&skip=0",
 					"protocol": "http",
 					"host": [
 						"20",
@@ -697,7 +697,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://20.96.181.1:3000/reserves-getdates?exchange_name=wazirx",
+					"raw": "http://4.204.209.215:3000/reserves-getdates?exchange_name=wazirx",
 					"protocol": "http",
 					"host": [
 						"20",
@@ -737,7 +737,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://20.96.181.1:3000/totalwalletamount?date=April-2027&exchange_name=coinmetrics",
+					"raw": "http://4.204.209.215:3000/totalwalletamount?date=April-2027&exchange_name=coinmetrics",
 					"protocol": "http",
 					"host": [
 						"20",
@@ -794,7 +794,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://20.96.181.1:3000/thirdpartyapi",
+					"raw": "http://4.204.209.215:3000/thirdpartyapi",
 					"protocol": "http",
 					"host": [
 						"20",
@@ -842,7 +842,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://20.96.181.1:3000/updateowner",
+					"raw": "http://4.204.209.215:3000/updateowner",
 					"protocol": "http",
 					"host": [
 						"20",
@@ -876,7 +876,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://20.96.181.1:3000/solvency?exchange_name=coinmetrics&start_date=2023-06-1&end_date=2023-06-14",
+					"raw": "http://4.204.209.215:3000/solvency?exchange_name=coinmetrics&start_date=2023-06-1&end_date=2023-06-14",
 					"protocol": "http",
 					"host": [
 						"20",
@@ -925,7 +925,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://20.96.181.1:3000/get_assettype?exchange_name=coinmetrics&date=10/6/2023",
+					"raw": "http://4.204.209.215:3000/get_assettype?exchange_name=coinmetrics&date=10/6/2023",
 					"protocol": "http",
 					"host": [
 						"20",
@@ -969,7 +969,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://20.96.181.1:3000/get_assettype?exchange_name=coinmetrics&date=10/6/2023",
+					"raw": "http://4.204.209.215:3000/get_assettype?exchange_name=coinmetrics&date=10/6/2023",
 					"protocol": "http",
 					"host": [
 						"20",

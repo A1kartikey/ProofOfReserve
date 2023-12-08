@@ -28,6 +28,20 @@ var UserSchema = new Schema({
     trim: true,
     required: true,
   },
+  Assign_Date: {
+    type: String,
+  },
+  End_Date: {
+    type: String,
+  },
+
+  accountStatus: {
+    type: String,
+  },
+  approvalDate: {
+    type: String,
+  },
+
   Exchange: [{ type: String }],
   created: {
     type: Date,

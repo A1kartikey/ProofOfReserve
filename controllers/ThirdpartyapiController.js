@@ -55,13 +55,12 @@ console.log("date",Date)
     const res = await axios.get(
       "https://api.coinmetrics.io/v4/blockchain-v2/" +
         assettype +
-        "/accounts?pretty=true&end_time=" +
+        "/blocks?pretty=true&end_time=" +
         Date +
         "&api_key=6oZAdNZcdtwAeLWAP4yG&page_size=1"
     );
     var ressult2 = res.data.data[0];
-
-    
+       
   } catch (error) {
     throw "coinmetrics 2api error"
   }
@@ -72,10 +71,12 @@ var data = [];
       
       account: Accountslist,
       balance: aa.new_balance,
-      creation_time: Date,
-      Blockheight: ressult2.creation_height
+      height: ressult2.height,
+      consensus_time: ressult2.consensus_time,
+      miner_time: ressult2.miner_time
       
     };
+    
     data.push(result)
 
     // var r = {
